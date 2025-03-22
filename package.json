@@ -1,0 +1,33 @@
+{
+  "name": "tagpay",
+  "version": "1.0.0",
+  "description": "TagPay is a modern financial technology application designed to streamline digital payments, enhance financial management, and empower users with secure and efficient transaction tools.",
+  "main": "index.js",
+  "private": true,
+  "packageManager": "npm@8.17.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TagPay-ict/tagpay.git"
+  },
+  "keywords": [
+    "Finance"
+  ],
+  "author": "Ralph https://github.com/wealthralph",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TagPay-ict/tagpay/issues"
+  },
+  "homepage": "https://github.com/TagPay-ict/tagpay#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "husky": "^9.1.7",
+    "prettier": "3.5.3",
+    "turbo": "^2.4.4"
+  }
+}
