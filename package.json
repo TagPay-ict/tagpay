@@ -9,7 +9,14 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:env": "node scripts/start.js",
+    "start:server": "npm run dev --workspace=server",
+    "start:client": "npm run dev --workspace=client",
+    "start:core": "npm run dev --workspace=core",
+    "prepare": "husky",
+    "commitlint": " commitlint --edit -c  ",
+    "commit": "commit"
   },
   "repository": {
     "type": "git",
@@ -29,5 +36,14 @@
     "husky": "^9.1.7",
     "prettier": "3.5.3",
     "turbo": "^2.4.4"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/express": "^5.0.1",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.14.1",
+    "@types/pg": "^8.11.13",
+    "node-cache": "^5.1.2"
   }
 }

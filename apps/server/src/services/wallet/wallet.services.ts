@@ -1,0 +1,101 @@
+import db from "../../db/connectDb";
+import { wallet } from "../../db/schema/wallet.model";
+import { eq, exists } from "drizzle-orm";
+import { BadRequestException } from "../../utils/error";
+import { ErrorCode } from "../../enum/errorCode.enum";
+import TagPay from "providers/tagpay/tagpay-modules";
+import { CreateWalletType } from "providers/tagpay/tagpay-types";
+
+
+type WalletType = typeof wallet.$inferInsert
+
+class WalletService {
+
+    public async createWalletService(data: CreateWalletType, userId: string) {
+        const { firstName, bvn, dateOfBirth, email, lastName, nin, phoneNumber, address, tier } = data;
+
+        return await db.transaction(async (tx) => {
+
+
+            // Check if a user has a wallet created already
+
+            const walletExistQuery = tx.select().from(wallet).where(eq(wallet.user_id, userId));
+            const walletExists = await tx.select().from(wallet).where(exists(walletExistQuery)).execute();
+
+            if (walletExists.length > 0) {
+                throw new BadRequestException("Wallet Already Exist For User ", ErrorCode.BAD_REQUEST)
+            }
+
+
+            const createWalletResponse = await TagPay.wallet.createUserWallet({
+                address,
+                nin,
+                email,
+                phoneNumber,
+                bvn,
+                dateOfBirth,
+                lastName,
+                tier,
+                firstName
+            })
+
+            console.log(createWalletResponse?.data, "th is is the wallet service response data")
+
+            if (createWalletResponse?.data.status !== true) {
+
+                throw new BadRequestException("Failed to create wallet", ErrorCode.BAD_REQUEST)
+
+            }
+
+            const walletDetails = createWalletResponse?.data.wallet
+
+
+            const walletPayload: WalletType = {
+                account_name: walletDetails?.accountName,
+                account_number: walletDetails?.accountNumber,
+                bank_code: walletDetails?.bankCode,
+                alias: "Main Account",
+                status: "active",
+                user_id: userId,
+                provider_account_id: walletDetails?.id,
+                meta_data: {
+                    mode: walletDetails?.mode,
+                    wallet_ref: walletDetails.accountReference
+                },
+                balance: 0,
+                available_balance: 0,
+                account_type: "Savings",
+                bank_name: walletDetails?.bankName,
+                frozen: false
+            }
+
+            const [newWallet] = await tx.insert(wallet).values(walletPayload).returning({
+                account_name: wallet.account_name,
+                account_number: wallet.account_number,
+                bank_name: wallet.bank_name,
+                available_balance: wallet.available_balance,
+                id: wallet.id,
+            });
+
+
+            return newWallet;
+
+
+        })
+
+    }
+
+    public async getWalletByUserId(userId: string): Promise<WalletType > {
+
+        const [walletRecord] = await db.select().from(wallet).where(eq(wallet.user_id, userId)).execute();
+
+
+
+        return walletRecord;
+
+    }
+
+}
+
+const walletService = new WalletService();
+export default walletService
