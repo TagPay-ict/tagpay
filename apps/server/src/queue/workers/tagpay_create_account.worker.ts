@@ -61,7 +61,7 @@ const TagPay_CreateAccountWorker = new Worker(
 
 TagPay_CreateAccountWorker.on("completed", (job: Job) => {
     console.log(`Job ${job.id} completed!`);
-
+    
 
 });
 

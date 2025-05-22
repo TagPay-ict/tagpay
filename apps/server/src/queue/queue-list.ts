@@ -12,7 +12,7 @@ interface ChargeTransferFeeType {
 export interface CreateAccountQueueType {
     firstName:string,
     lastName:string,
-    dateOfBorth: string,
+    dateOfBirth: string,
     email:string,
     address:string,
     phoneNumber: string,

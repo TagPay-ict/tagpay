@@ -118,11 +118,11 @@ class OnboardingController {
         const createAccountQueuePayload: CreateAccountQueueType = {
             firstName: userRecord.user.first_name as string,
             lastName: userRecord.user.last_name as string,
-            dateOfBorth: userRecord.user.date_of_birth as string,
+            dateOfBirth: userRecord.user.date_of_birth as string,
             bvn: bvn,
             email: userRecord.user.email as string,
             phoneNumber: userRecord.user.phone_number as string,
-            tier: "TIER_3",
+            tier: "TIER_1",
             userId,
             address: (userRecord.user.address as { street: string })?.street
         }
