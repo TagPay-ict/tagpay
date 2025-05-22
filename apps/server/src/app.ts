@@ -16,6 +16,8 @@ import redis from "config/redis.config";
 import { systemLogger } from "utils/logger";
 import { ErrorCode } from "enum/errorCode.enum";
 import { InternalServerException } from "utils/error";
+import { setupBullBoard } from "./queue/board";
+
 
 const app: Express = express()
 
@@ -30,6 +32,8 @@ redis.on("error", (error: Error) => {
         ErrorCode.INTERNAL_SERVER_ERROR
     );
 });
+
+setupBullBoard(app)
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));

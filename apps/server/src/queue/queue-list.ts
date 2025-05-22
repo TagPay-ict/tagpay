@@ -37,4 +37,4 @@ const options = {
 }
 
 export const TagPay_ChargeTransferFeeQueue = new Queue<ChargeTransferFeeType>(QueueRegistry.create_transfer_fee_charge, options)
-export const TagPay_CreateAccountQueue = new Queue<CreateAccountQueueType>(QueueRegistry.create_transfer_fee_charge, options)
+export const TagPay_CreateAccountQueue = new Queue<CreateAccountQueueType>(QueueRegistry.create_tagpay_account, options)
