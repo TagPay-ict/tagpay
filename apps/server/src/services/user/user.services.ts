@@ -1,10 +1,12 @@
 import { user } from "../../db/schema/user.model";
 import db from "../../db/connectDb";
-import { eq } from "drizzle-orm";
+import { eq, ilike } from "drizzle-orm";
 import { BadRequestException } from "../../utils/error";
 import { ErrorCode } from "../../enum/errorCode.enum";
 import { setup } from "db/schema/setup.model";
 import { systemLogger } from "utils/logger";
+import redis from "config/redis.config";
+import { wallet } from "db/schema/wallet.model";
 
 type UserType = typeof user.$inferInsert
 class UserServices {
@@ -18,8 +20,8 @@ class UserServices {
             .leftJoin(setup, eq(setup.user_id, userId));
 
         return {
-            user:userRecord.user,
-            setup:userRecord.setup
+            user: userRecord.user,
+            setup: userRecord.setup
         }
 
     }
@@ -34,7 +36,7 @@ class UserServices {
         }
 
         // Define sensitive fields that cannot be updated
-        const sensitiveFields = ["passcode",  "secure_pin", "refresh_token", "id",  "phone_number"];
+        const sensitiveFields = ["passcode", "secure_pin", "refresh_token", "id", "phone_number"];
 
         // Check if any sensitive fields are being updated
         const attemptedSensitiveUpdates = Object.keys(fields).filter((field) => sensitiveFields.includes(field));
@@ -62,6 +64,30 @@ class UserServices {
             systemLogger.error(`Error updating user ${userId}: ${error}`);
             throw new BadRequestException("Failed to update user", ErrorCode.BAD_REQUEST);
         }
+    }
+
+    public async getUsersByTag(search: string) {
+        const searchKey = `tag_search:${search}`;
+
+        // Check 
+        const cached = await redis.get(searchKey);
+        if (cached) {
+            return JSON.parse(cached);
+        }
+
+        const results = await db
+            .select({ id: user.id, tag: user.tag, full_name: user.full_name, first_name: user.first_name, last_name: user.last_name, account_name: wallet.account_name, account_number: wallet.account_number ,bank_name:wallet.bank_name})
+            .from(user)
+            .where(ilike(user.tag, `${search}%`))
+            .leftJoin(wallet, eq(wallet.user_id, user.id));
+
+
+        console.log(results, "these are the results from the search")
+
+
+        await redis.set(searchKey, JSON.stringify(results), "EX", 30);
+
+        return results;
     }
 
 }

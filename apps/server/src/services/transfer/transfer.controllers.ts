@@ -1,9 +1,10 @@
 import {asyncHandler} from "../../middlewares/asyncHandler";
 import { Response, Request} from "express"
-import {nipTransferSchema} from "./transfer.types";
+import {nipTransferSchema, tagTransferSchema} from "./transfer.types";
 import transferServices from "./transfer.services";
+import { HTTPSTATUS } from "config/statusCode.config";
 
-class TransferController {
+class TransferControllers {
 
     public nipTransferController = asyncHandler(async (req:Request, res: Response) => {
 
@@ -25,9 +26,40 @@ class TransferController {
             }
         }
 
-        const {} = transferServices.nipTransferService(payload  , user.id)
+        const response = await transferServices.nipTransferService(payload  , user.id)
 
     })
 
 
+    public tagTransferController = asyncHandler(async (req:Request, res: Response) => {
+
+        const user = req.user
+
+        console.log(req.body, "na the re.body be this ")
+
+        const {amount,tag} = tagTransferSchema.parse({...req.body})
+
+        const payload = {
+            amount,
+            tag
+        }
+
+        console.log("this transfer is fucking running")
+
+         await transferServices.tagTransferService(payload  , user.id)
+
+
+        res.status(HTTPSTATUS.ACCEPTED).json({
+            success: true,
+            message: "Transfer Processing"
+        })
+    })
+
+
+
+
 }
+
+
+const transferControllers = new TransferControllers()
+export default transferControllers

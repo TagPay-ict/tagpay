@@ -99,6 +99,7 @@ class OnboardingController {
             state_of_origin: userBvnData.data.entity?.state_of_origin,
             date_of_birth: userBvnData.data.entity?.date_of_birth,
             bvn: hashedBvn,
+            full_name: `${userBvnData.data.entity?.first_name} ${userBvnData.data.entity?.last_name}`,
             kyc_tier: 1
         }
 
@@ -161,6 +162,9 @@ class OnboardingController {
             throw new BadRequestException("Invalid or Expired OTP", ErrorCode.AUTH_INVALID_TOKEN);
         }
 
+        await db.transaction(async (tx) => {
+            tx.update(setup).set({ is_identity_verified: true })
+        })
 
         return res.status(HTTPSTATUS.OK).json({
             success: true,
@@ -199,7 +203,7 @@ class OnboardingController {
 
         const { tag } = parseResult.data;
 
-        const reservedNames = ["gabs", "invest"];
+        const reservedNames = ["tag", "pay", "piper", "transfer"];
 
         const usernameQuery = db
             .select()

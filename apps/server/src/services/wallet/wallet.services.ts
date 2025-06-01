@@ -5,6 +5,7 @@ import { BadRequestException } from "../../utils/error";
 import { ErrorCode } from "../../enum/errorCode.enum";
 import TagPay from "providers/tagpay/tagpay-modules";
 import { CreateWalletType } from "providers/tagpay/tagpay-types";
+import { user } from "db/schema/user.model";
 
 
 type WalletType = typeof wallet.$inferInsert
@@ -48,7 +49,7 @@ class WalletService {
             }
 
             const walletDetails = createWalletResponse?.data.wallet
-
+            const customerDetails =createWalletResponse?.data
 
             const walletPayload: WalletType = {
                 account_name: walletDetails?.accountName,
@@ -77,6 +78,9 @@ class WalletService {
                 id: wallet.id,
             });
 
+            await tx.update(user).set({
+                provider_id:customerDetails.id,
+            })
 
             return newWallet;
 

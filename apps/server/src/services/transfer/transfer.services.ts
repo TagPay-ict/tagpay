@@ -1,24 +1,26 @@
-import {NipTransferType} from "./transfer.types";
-import {BadRequestException} from "../../utils/error";
-import {ErrorCode} from "../../enum/errorCode.enum";
-import {wallet} from "../../db/schema/wallet.model";
+import { NipTransferType, TagTransferType } from "./transfer.types";
+import { BadRequestException } from "../../utils/error";
+import { ErrorCode } from "../../enum/errorCode.enum";
+import { wallet } from "../../db/schema/wallet.model";
 import db from "../../db/connectDb";
-import {eq} from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import tagpayWalletApi from "../../providers/tagpay/tagpay-wallet.api";
 import tagpayTransferApi from "../../providers/tagpay/tagpay-transfer.api";
-import {transaction} from "../../db/schema/transactions.model";
+import { transaction } from "../../db/schema/transactions.model";
 import transactionsServices from "../transactions/transactions.services";
-import {TransactionType} from "../transactions/transaction.types";
-import {TagPay_ChargeTransferFeeQueue} from "../../queue/queue-list";
-import {QueueRegistry} from "../../queue/queue-registry";
+import { TransactionType } from "../transactions/transaction.types";
+import { TagPay_ChargeTransferFeeQueue } from "../../queue/queue-list";
+import { QueueRegistry } from "../../queue/queue-registry";
 import TagPay from "providers/tagpay/tagpay-modules";
+import { user } from "db/schema/user.model";
+import { WalletToWalletType } from "providers/tagpay/tagpay-types";
 
 
 class TransferServices {
 
 
 
-    protected calculateCharges(amount: number): number {
+    public calculateCharges(amount: number): number {
         if (amount <= 5000) {
             return 10;
         } else if (amount <= 50000) {
@@ -31,11 +33,11 @@ class TransferServices {
 
     public async nipTransferService(data: NipTransferType, userId: string) {
 
-        const {amount, customerId, metadata , narration, sortCode, accountNumber} = data
+        const { amount, customerId, metadata, narration, sortCode, accountNumber } = data
 
 
         if (!userId) {
-            throw new BadRequestException("User Id is required ", ErrorCode.BAD_REQUEST)
+            throw new BadRequestException("Cannot find user ", ErrorCode.BAD_REQUEST)
         }
 
 
@@ -55,12 +57,12 @@ class TransferServices {
 
             const totalAmount = amount + charges
 
-            if(totalAmount < amount ) {
+            if (totalAmount < amount) {
                 throw new BadRequestException("Insufficient balance", ErrorCode.BAD_REQUEST)
             }
 
 
-            const transferPayload:NipTransferType = {
+            const transferPayload: NipTransferType = {
                 amount: amount,
                 accountNumber: accountNumber,
                 sortCode: sortCode,
@@ -71,7 +73,7 @@ class TransferServices {
 
             const transferResponse = await TagPay.payments.nipTransfer(transferPayload)
 
-            if(transferResponse.data.status !== true) {
+            if (transferResponse.data.status !== true) {
                 throw new BadRequestException("Failed to transfer funds", ErrorCode.BAD_REQUEST)
             }
 
@@ -87,7 +89,7 @@ class TransferServices {
 
             // create a transaction record
 
-            const transactionPayload:TransactionType = {
+            const transactionPayload: TransactionType = {
                 amount: amount,
                 fee: charges,
                 type: "DEBIT",
@@ -114,6 +116,62 @@ class TransferServices {
             })
 
         })
+    }
+
+
+    public async tagTransferService(data: TagTransferType, userId: string) {
+
+        const { amount, tag } = data
+
+        // find the sender data which is the user 
+
+
+        await db.transaction(async (tx) => {
+
+
+            const sender = await tx.query.user.findFirst({
+                where: eq(user.id, userId),
+                with: {
+                    wallet: true
+                }
+            })
+
+
+            if (!sender) {
+                throw new BadRequestException("Sender not found", ErrorCode.BAD_REQUEST)
+            }
+
+            const recipient = await tx.query.user.findFirst({
+                where: eq(user.tag, tag),
+                with: {
+                    wallet: true
+                }
+            })
+            if (!recipient) {
+                throw new BadRequestException(`Recipient with tag ${tag} not found`, ErrorCode.BAD_REQUEST)
+            }
+
+
+            // create the transfer payload 
+
+            const transferPayload: WalletToWalletType = {
+                amount,
+                fromWalletId: sender.wallet?.provider_account_id as string,
+                toWalletId: recipient.wallet?.provider_account_id as string
+            }
+
+            const transferResponse = await TagPay.payments.walletToWallet(transferPayload)
+
+            console.log(transferResponse.data, "this is the transfer response")
+
+        })
+
+
+
+
+
+
+
     }
 }
 

@@ -1,10 +1,12 @@
 import express from 'express';
+import transferControllers from './transfer.controllers';
+import { checkInsufficientBalance } from 'middlewares/insufficientBalance.middleware';
 
 
-const transferROuter = express.Router();
+const transferRouter = express.Router();
 
 
-transferROuter.post("/nip", );
+transferRouter.post("/tag", transferControllers.tagTransferController);
 
 
-export default transferROuter;
+export default transferRouter;

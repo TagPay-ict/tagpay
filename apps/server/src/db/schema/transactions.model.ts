@@ -35,4 +35,5 @@ export const transactionRelations = relations(transaction, ({ one }) => ({
 }));
 
 
+
 export const transactionSchemaInsert = createInsertSchema(transaction)

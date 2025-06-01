@@ -23,6 +23,7 @@ class TagPayWalletApi extends TagPayBaseClass {
         }catch(error){
             console.log(error, "this is the error from the wallet")
             systemLogger.error(error)
+            throw error
         }
 
 

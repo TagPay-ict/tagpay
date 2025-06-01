@@ -26,12 +26,12 @@ export enum AudienceType {
 
 
 export const AccessTokenSignOptions: SignOptions = {
-    expiresIn: 80 * 60, // 5 minutes in seconds
+    expiresIn: 4 * 60 * 60, // 2 minutes in seconds
 };
 
 export const RefreshTokenSignOptions: SignOptions = {
     // expiresIn: ms(config.REFRESH_TOKEN_EXPIRES_IN as ms.StringValue),
-    expiresIn: 200 * 60,
+    expiresIn: 7 * 60 * 60, // 3 hours in seconds
 };
 
 console.log(AccessTokenSignOptions.expiresIn, "this is the access token exxpiratio")

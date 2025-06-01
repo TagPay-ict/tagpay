@@ -14,4 +14,18 @@ export const createWalletSchema = z.object({
 })
 
 
+export type CustomerToCustomerType = {
+    fromCustomerId:string,
+    toCustomerId:string,
+    amount:number
+}
+
+
+export type WalletToWalletType = {
+    fromWalletId:string;
+    toWalletId:string;
+    amount:number
+}
+
+
 export type CreateWalletType = z.infer<typeof createWalletSchema>;

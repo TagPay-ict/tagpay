@@ -90,13 +90,18 @@ class AuthService {
 
     public async createUser(phoneNumber: string): Promise<{ accessToken: string, refreshToken: string }> {
         return await db.transaction(async (tx) => {
+
             const [newUser] = await tx.insert(user).values({ phone_number: phoneNumber }).returning({
                 id: user.id,
             });
 
+            const refreshTokenExpiresInSeconds = typeof RefreshTokenSignOptions.expiresIn === "number"
+                ? RefreshTokenSignOptions.expiresIn
+                : 4 * 60 * 60; // fallback to 4 hours if not set as number
+
             const [sessionId] = await tx.insert(session).values({
                 user_id: newUser.id,
-                expires_at: new Date(Date.now() + 60 * 60 * 1000)
+                expires_at: new Date(Date.now() + refreshTokenExpiresInSeconds * 1000)
             }).returning({ id: session.id });
 
             const tokenPayload: TokenPayload = {
@@ -130,7 +135,6 @@ class AuthService {
             const incomingRefreshTokens = existingUser.refresh_token || [];
 
 
-            // 🛡️ Step 1: Detect token reuse (if this login follows a stolen token incident)
             const reusedTokenDetected = incomingRefreshTokens.some(token => {
                 try {
 
@@ -139,23 +143,24 @@ class AuthService {
                     const verifiedToken = jwtUtility.verifyRefreshToken(token, { audience: AudienceType.MobileApp, subject: existingUser.id, issuer: decoded?.iss as string });
                     return verifiedToken?.user_id !== existingUser.id; // foreign token
                 } catch {
-                    return false; // expired or invalid token
+                    return false; 
                 }
             });
 
             if (reusedTokenDetected) {
                 systemLogger.warn(`Refresh token reuse suspected for user: ${existingUser.id}`);
-                // Clear all tokens to force full logout on other devices
                 await tx.update(user).set({ refresh_token: [] }).where(eq(user.id, existingUser.id));
             }
 
-            // 🧾 Step 2: Create a new session
+            const refreshTokenExpiresInSeconds = typeof RefreshTokenSignOptions.expiresIn === "number"
+                ? RefreshTokenSignOptions.expiresIn
+                : 4 * 60 * 60; // fallback to 4 hours if not set as number
+
             const [sessionId] = await tx.insert(session).values({
                 user_id: existingUser.id,
-                expires_at: new Date(Date.now() + 60 * 60 * 1000)
+                expires_at: new Date(Date.now() + refreshTokenExpiresInSeconds * 1000)
             }).returning({ id: session.id });
 
-            // 🧬 Step 3: Create new tokens
             const tokenPayload: TokenPayload = {
                 user_id: existingUser.id,
                 aud: AudienceType.MobileApp,
