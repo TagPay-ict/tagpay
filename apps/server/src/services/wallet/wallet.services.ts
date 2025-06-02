@@ -49,7 +49,7 @@ class WalletService {
             }
 
             const walletDetails = createWalletResponse?.data.wallet
-            const customerDetails =createWalletResponse?.data
+            const customerDetails =createWalletResponse?.data.customer
 
             const walletPayload: WalletType = {
                 account_name: walletDetails?.accountName,

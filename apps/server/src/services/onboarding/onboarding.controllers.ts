@@ -109,6 +109,10 @@ class OnboardingController {
 
         const userRecord = await userServices.getUser(userId)
 
+        if (!userRecord) {
+            throw new NotFoundException("User not found", ErrorCode.AUTH_NOT_FOUND);
+        }
+
         await sendOtp(payload.bvn_phone_number)
 
         await db.transaction(async (tx) => {
@@ -117,15 +121,15 @@ class OnboardingController {
 
 
         const createAccountQueuePayload: CreateAccountQueueType = {
-            firstName: userRecord.user.first_name as string,
-            lastName: userRecord.user.last_name as string,
-            dateOfBirth: userRecord.user.date_of_birth as string,
+            firstName: userRecord.first_name as string,
+            lastName: userRecord.last_name as string,
+            dateOfBirth: userRecord.date_of_birth as string,
             bvn: bvn,
-            email: userRecord.user.email as string,
-            phoneNumber: userRecord.user.phone_number as string,
+            email: userRecord.email as string,
+            phoneNumber: userRecord.phone_number as string,
             tier: "TIER_1",
             userId,
-            address: (userRecord.user.address as { street: string })?.street
+            address: (userRecord.address as { street: string })?.street
         }
 
         await TagPay_CreateAccountQueue.add(QueueRegistry.create_tagpay_account, createAccountQueuePayload)
@@ -153,7 +157,11 @@ class OnboardingController {
 
         const userRecord = await userServices.getUser(userId)
 
-        const phoneNumber = userRecord.user.bvn_phone_number as string
+        if (!userRecord) {
+            throw new NotFoundException("User not found", ErrorCode.AUTH_NOT_FOUND);
+        }
+
+        const phoneNumber = userRecord.bvn_phone_number as string
 
         const value = cache.take(phoneNumber);
 

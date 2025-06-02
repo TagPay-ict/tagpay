@@ -23,7 +23,7 @@ export const user = pgTable('user', {
     has_onboarded: boolean().default(false),
     password: varchar(),
     phone_number: varchar().unique(),
-    bvn_phone_number: varchar().unique(),
+    bvn_phone_number: varchar(),
     country: varchar().default("NG"),
     status: statusEnum().default('active'),
     referral_code: varchar().unique(),

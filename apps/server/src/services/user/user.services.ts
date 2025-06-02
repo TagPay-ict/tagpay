@@ -13,16 +13,16 @@ class UserServices {
 
     public async getUser(userId: string) {
 
-        const [userRecord] = await db
-            .select()
-            .from(user)
-            .where(eq(user.id, userId))
-            .leftJoin(setup, eq(setup.user_id, userId));
+        const userRecord = await db.query.user.findFirst({
+            where: eq(user.id, userId),
+            with: {
+                setup: true
+            }
+        })
 
-        return {
-            user: userRecord.user,
-            setup: userRecord.setup
-        }
+        console.log(userRecord, "this is the user reord")
+
+        return userRecord
 
     }
 

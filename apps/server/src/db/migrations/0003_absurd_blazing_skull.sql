@@ -1,1 +1,0 @@
-ALTER TABLE "setup" ADD COLUMN "is_account_created" boolean DEFAULT false;

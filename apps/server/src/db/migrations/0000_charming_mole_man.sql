@@ -7,6 +7,22 @@ CREATE TYPE "public"."platform" AS ENUM('web', 'mobile');--> statement-breakpoin
 CREATE TYPE "public"."status" AS ENUM('active', 'blocked', 'inactive');--> statement-breakpoint
 CREATE TYPE "public"."wallet_status" AS ENUM('active', 'open', 'blocked', 'inactive');--> statement-breakpoint
 CREATE TYPE "public"."type" AS ENUM('Savings', 'Current');--> statement-breakpoint
+CREATE TABLE "bill_payment" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"status" "status" NOT NULL,
+	"type" "type" NOT NULL,
+	"reference" varchar NOT NULL,
+	"provider" varchar NOT NULL,
+	"external_bill_id" varchar NOT NULL,
+	"amount" integer NOT NULL,
+	"attributes" jsonb NOT NULL,
+	"updated_at" timestamp,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"deleted_at" timestamp,
+	CONSTRAINT "bill_payment_id_unique" UNIQUE("id")
+);
+--> statement-breakpoint
 CREATE TABLE "session" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -16,6 +32,24 @@ CREATE TABLE "session" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"deleted_at" timestamp,
 	CONSTRAINT "session_id_unique" UNIQUE("id")
+);
+--> statement-breakpoint
+CREATE TABLE "setup" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"is_avatar_uploaded" boolean DEFAULT false,
+	"is_tag_created" boolean DEFAULT false,
+	"is_notification_enabled" boolean DEFAULT false,
+	"is_account_funded" boolean DEFAULT false,
+	"is_email_verified" boolean DEFAULT false,
+	"is_phone_verified" boolean DEFAULT false,
+	"is_address_verified" boolean DEFAULT false,
+	"is_address_provided" boolean DEFAULT false,
+	"is_identity_verified" boolean DEFAULT false,
+	"is_bvn_provided" boolean DEFAULT false,
+	"has_created_transactionPin" boolean DEFAULT false,
+	"is_account_created" boolean DEFAULT false,
+	CONSTRAINT "setup_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE "transaction" (
@@ -39,21 +73,6 @@ CREATE TABLE "transaction" (
 	CONSTRAINT "transaction_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
-CREATE TABLE "setup" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" uuid NOT NULL,
-	"is_avatar_uploaded" boolean DEFAULT false,
-	"is_tag_created" boolean DEFAULT false,
-	"is_notification_enabled" boolean DEFAULT false,
-	"is_account_funded" boolean DEFAULT false,
-	"is_email_verified" boolean,
-	"is_phone_verified" boolean,
-	"is_address_verified" boolean DEFAULT false,
-	"is_bvn_verified" boolean DEFAULT false,
-	"has_created_transactionPin" boolean DEFAULT false,
-	CONSTRAINT "setup_id_unique" UNIQUE("id")
-);
---> statement-breakpoint
 CREATE TABLE "user" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"first_name" varchar,
@@ -61,11 +80,12 @@ CREATE TABLE "user" (
 	"middle_name" varchar,
 	"account_ref" uuid DEFAULT gen_random_uuid(),
 	"full_name" varchar,
-	"gabs_tag" varchar,
+	"tag" varchar,
 	"email" varchar,
 	"has_onboarded" boolean DEFAULT false,
 	"password" varchar,
 	"phone_number" varchar,
+	"bvn_phone_number" varchar,
 	"country" varchar DEFAULT 'NG',
 	"status" "status" DEFAULT 'active',
 	"referral_code" varchar,
@@ -74,6 +94,7 @@ CREATE TABLE "user" (
 	"referrals" uuid[] DEFAULT '{}'::uuid[],
 	"gender" "user_gender",
 	"providers" jsonb,
+	"state_of_origin" varchar,
 	"provider_id" varchar,
 	"bvn" varchar,
 	"kyc_tier" integer DEFAULT 0,
@@ -94,7 +115,7 @@ CREATE TABLE "user" (
 	"deleted_at" timestamp,
 	CONSTRAINT "user_id_unique" UNIQUE("id"),
 	CONSTRAINT "user_account_ref_unique" UNIQUE("account_ref"),
-	CONSTRAINT "user_gabs_tag_unique" UNIQUE("gabs_tag"),
+	CONSTRAINT "user_tag_unique" UNIQUE("tag"),
 	CONSTRAINT "user_email_unique" UNIQUE("email"),
 	CONSTRAINT "user_phone_number_unique" UNIQUE("phone_number"),
 	CONSTRAINT "user_referral_code_unique" UNIQUE("referral_code"),
@@ -115,6 +136,9 @@ CREATE TABLE "wallet" (
 	"alias" varchar NOT NULL,
 	"account_name" varchar NOT NULL,
 	"account_number" varchar NOT NULL,
+	"post_no_credit" boolean DEFAULT false,
+	"limit_profile" jsonb,
+	"kyc_tier" integer DEFAULT 0,
 	"bank_name" varchar NOT NULL,
 	"bank_code" varchar NOT NULL,
 	"account_purpose" varchar,
@@ -126,8 +150,9 @@ CREATE TABLE "wallet" (
 	CONSTRAINT "wallet_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
+ALTER TABLE "bill_payment" ADD CONSTRAINT "bill_payment_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "setup" ADD CONSTRAINT "setup_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "transaction" ADD CONSTRAINT "transaction_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "transaction" ADD CONSTRAINT "transaction_wallet_id_wallet_id_fk" FOREIGN KEY ("wallet_id") REFERENCES "public"."wallet"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "setup" ADD CONSTRAINT "setup_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "wallet" ADD CONSTRAINT "wallet_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;

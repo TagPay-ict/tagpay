@@ -158,7 +158,7 @@ class  AuthController {
         const { phoneNumber } = registrationValidationSchema.parse({ ...req.body })
 
 
-         await authServices.logout(phoneNumber as string);
+         await authServices.resendToken(phoneNumber as string);
 
 
 
@@ -172,8 +172,11 @@ class  AuthController {
 
     public createPasscode = asyncHandler(async (req: Request, res: Response) => {
 
+        console.log(req.body, "this is the body form the req")
+
 
         const { passcode ,userId} = passcodeVerificationValidation.parse({ ...req.body })
+
 
 
         await authServices.createPasscode(userId, passcode)

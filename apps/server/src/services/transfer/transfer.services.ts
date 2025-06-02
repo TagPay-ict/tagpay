@@ -16,6 +16,7 @@ import { user } from "db/schema/user.model";
 import { WalletToWalletType } from "providers/tagpay/tagpay-types";
 
 
+
 class TransferServices {
 
 
@@ -31,7 +32,7 @@ class TransferServices {
     }
 
 
-    public async nipTransferService(data: NipTransferType, userId: string) {
+    public async nipTransfer(data: NipTransferType, userId: string) {
 
         const { amount, customerId, metadata, narration, sortCode, accountNumber } = data
 
@@ -119,7 +120,7 @@ class TransferServices {
     }
 
 
-    public async tagTransferService(data: TagTransferType, userId: string) {
+    public async tagTransfer(data: TagTransferType, userId: string) {
 
         const { amount, tag } = data
 
@@ -161,6 +162,14 @@ class TransferServices {
             }
 
             const transferResponse = await TagPay.payments.walletToWallet(transferPayload)
+
+            //  create new trasaction
+
+            const transactionPayload:TransactionType = {
+
+            } 
+
+            await db.insert(transaction).values(transactionPayload)
 
             console.log(transferResponse.data, "this is the transfer response")
 

@@ -10,16 +10,13 @@ class UserController {
         const userId = req.params.user as string;
 
 
-        const { user, setup } = await userServices.getUser(userId || req.user.id);
+        const userRecord = await userServices.getUser(userId || req.user.id);
 
 
         res.status(HTTPSTATUS.OK).json({
             success: true,
             message: "User retrieved successfully",
-            data: {
-                user,
-                setup
-            }
+            data: userRecord
         });
     })
 

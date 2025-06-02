@@ -23,6 +23,7 @@ export const wallet = pgTable("wallet", {
     alias: varchar().notNull(),
     account_name: varchar().notNull(),
     account_number: varchar().notNull(),
+    post_no_credit: boolean().default(false),
     limit_profile: jsonb(),
     kyc_tier: integer().default(0),
     bank_name: varchar().notNull(),
