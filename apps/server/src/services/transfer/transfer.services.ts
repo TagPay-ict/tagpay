@@ -160,8 +160,8 @@ class TransferServices {
 
             const transferPayload: WalletToWalletType = {
                 amount,
-                fromWalletId: sender.wallet?.provider_account_id as string,
-                toWalletId: recipient.wallet?.provider_account_id as string
+                fromWalletId: sender.wallet?.provider_wallet_id as string,
+                toWalletId: recipient.wallet?.provider_wallet_id as string
             }
 
             const transferResponse = await TagPay.payments.walletToWallet(transferPayload)
