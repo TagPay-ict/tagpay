@@ -8,6 +8,7 @@ import { wallet } from "db/schema/wallet.model";
 import { user } from "db/schema/user.model";
 import { setup } from "db/schema/setup.model";
 import walletService from "services/wallet/wallet.services";
+import { eq } from "drizzle-orm";
 
 
 type WalletType = typeof wallet.$inferInsert
@@ -36,6 +37,8 @@ const TagPay_CreateAccountWorker = new Worker(
     
             const createWalletResponse = await walletService.createWalletService(payload, userId)
 
+            console.log(createWalletResponse, "this is the create wallet response")
+
             return createWalletResponse
 
 
@@ -59,9 +62,12 @@ const TagPay_CreateAccountWorker = new Worker(
 )
 
 
-TagPay_CreateAccountWorker.on("completed", (job: Job) => {
+TagPay_CreateAccountWorker.on("completed",async (job: Job) => {
     console.log(`Job ${job.id} completed!`);
+
+    const data = job.returnvalue
     
+    await db.update(setup).set({is_account_created:true}).where(eq(setup.user_id,data.user_id))
 
 });
 

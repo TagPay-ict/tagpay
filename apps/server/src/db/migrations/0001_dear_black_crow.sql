@@ -1,0 +1,1 @@
+ALTER TABLE "wallet" RENAME COLUMN "provider_account_id" TO "provider_wallet_id";

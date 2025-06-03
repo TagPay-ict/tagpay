@@ -138,6 +138,9 @@ class TransferServices {
             })
 
 
+            console.log(sender, "this is the sender")
+
+
             if (!sender) {
                 throw new BadRequestException("Sender not found", ErrorCode.BAD_REQUEST)
             }

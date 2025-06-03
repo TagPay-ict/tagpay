@@ -58,10 +58,11 @@ class WalletService {
                 alias: "Main Account",
                 status: "active",
                 user_id: userId,
-                provider_account_id: walletDetails?.id,
+                provider_wallet_id: walletDetails?.walletId,
                 meta_data: {
                     mode: walletDetails?.mode,
-                    wallet_ref: walletDetails.accountReference
+                    wallet_ref: walletDetails.accountReference,
+                    merchant_wallet_id: walletDetails.id
                 },
                 balance: 0,
                 available_balance: 0,
@@ -75,6 +76,7 @@ class WalletService {
                 account_number: wallet.account_number,
                 bank_name: wallet.bank_name,
                 available_balance: wallet.available_balance,
+                user_id: wallet.user_id,
                 id: wallet.id,
             });
 

@@ -20,7 +20,6 @@ class UserServices {
             }
         })
 
-        console.log(userRecord, "this is the user reord")
 
         return userRecord
 

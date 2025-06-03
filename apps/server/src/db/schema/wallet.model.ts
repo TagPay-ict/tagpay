@@ -13,7 +13,7 @@ export const wallet = pgTable("wallet", {
     id: uuid("id").unique().primaryKey().defaultRandom(),
     account_type: walletTypeEnum().default('Savings').notNull(),
     user_id: uuid().notNull().references(() => user.id, { onDelete: 'cascade' }),
-    provider_account_id: varchar().notNull(),
+    provider_wallet_id: varchar().notNull(),
     currency: varchar().notNull().default("NGN"),
     status: walletStatusEnum().default("open"),
     balance: integer().default(0).notNull(),

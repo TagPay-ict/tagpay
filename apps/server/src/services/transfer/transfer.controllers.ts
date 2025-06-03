@@ -26,7 +26,7 @@ class TransferControllers {
             }
         }
 
-        const response = await transferServices.nipTransferService(payload  , user.id)
+        const response = await transferServices.nipTransfer(payload  , user.id)
 
     })
 
@@ -46,7 +46,7 @@ class TransferControllers {
 
         console.log("this transfer is fucking running")
 
-         await transferServices.tagTransferService(payload  , user.id)
+         await transferServices.tagTransfer(payload  , user.id)
 
 
         res.status(HTTPSTATUS.ACCEPTED).json({
