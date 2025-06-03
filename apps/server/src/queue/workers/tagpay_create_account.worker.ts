@@ -11,7 +11,6 @@ import walletService from "services/wallet/wallet.services";
 import { eq } from "drizzle-orm";
 
 
-type WalletType = typeof wallet.$inferInsert
 
 const TagPay_CreateAccountWorker = new Worker(
     QueueRegistry.create_tagpay_account,

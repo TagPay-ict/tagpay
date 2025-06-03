@@ -64,9 +64,12 @@ class OnboardingController {
         await userServices.updateUser({ email }, userId)
 
 
-        await db.update(setup).set({ is_email_verified: true })
-        // await db.transaction(async (tx) => {
-        // })
+        await db.transaction(async (tx) => {
+            await tx.update(setup)
+                .set({ is_email_verified: true })
+                .where(eq(setup.user_id, userId))
+                .execute();
+        });
 
 
         res.status(HTTPSTATUS.ACCEPTED).json({
@@ -116,8 +119,11 @@ class OnboardingController {
         await sendOtp(payload.bvn_phone_number)
 
         await db.transaction(async (tx) => {
-            tx.update(setup).set({ is_bvn_provided: true })
-        })
+            await tx.update(setup)
+                .set({ is_bvn_provided: true })
+                .where(eq(setup.user_id, userId))
+                .execute();
+        });
 
 
         const createAccountQueuePayload: CreateAccountQueueType = {
@@ -171,8 +177,11 @@ class OnboardingController {
         }
 
         await db.transaction(async (tx) => {
-            tx.update(setup).set({ is_identity_verified: true })
-        })
+            await tx.update(setup)
+                .set({ is_identity_verified: true })
+                .where(eq(setup.user_id, userId))
+                .execute();
+        });
 
         return res.status(HTTPSTATUS.OK).json({
             success: true,
