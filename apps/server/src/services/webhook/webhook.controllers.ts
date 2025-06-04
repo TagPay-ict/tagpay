@@ -5,7 +5,10 @@ import WebhookHandlers from "./webhook.handlers";
 
 export default class WebhookControllers {
 
-    constructor(private readonly handlers: WebhookHandlers){
+    private readonly handlers: WebhookHandlers
+
+    constructor( handlers: WebhookHandlers){
+        this.handlers = handlers
     }
 
     public tagpay_controllers = asyncHandler(async(req:Request, res:Response) => {
@@ -20,7 +23,7 @@ export default class WebhookControllers {
 
         switch (packet_event) {
             case packet_event === TAGPAY_EVENTS_TYPE.account_created:
-                this.handlers
+              await  this.handlers.walletCreated_handler
                 break;
         
             default:

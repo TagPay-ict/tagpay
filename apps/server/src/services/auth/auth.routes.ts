@@ -1,18 +1,22 @@
 import express from 'express';
-import authContrller from './auth.controllers';
+import AuthControllers from './auth.controllers';
 
+export default class AuthRoutes {
+    private readonly router: express.Router;
 
-const authRouter = express.Router();
+    constructor(private readonly controller: AuthControllers) {
+        this.router = express.Router();
+    }
 
-
-authRouter.post("/register", authContrller.registerUser)
-authRouter.post("/login", authContrller.loginUser)
-authRouter.post("/verify_phone", authContrller.verifyPhoneNumberOtp)
-authRouter.post("/verify_passcode", authContrller.verifyPasscode)
-authRouter.post("/refresh_token", authContrller.refreshToken)
-authRouter.post("/logout", authContrller.logOut)
-authRouter.post("/resend_otp", authContrller.resendOtp)
-authRouter.post("/create_passcode", authContrller.createPasscode)
-
-
-export default authRouter;
+    routes = () => {
+        this.router.post("/register", this.controller.registerUser);
+        this.router.post("/login", this.controller.loginUser);
+        this.router.post("/verify_phone", this.controller.verifyPhoneNumberOtp);
+        this.router.post("/verify_passcode", this.controller.verifyPasscode);
+        this.router.post("/refresh_token", this.controller.refreshToken);
+        this.router.post("/logout", this.controller.logOut);
+        this.router.post("/resend_otp", this.controller.resendOtp);
+        this.router.post("/create_passcode", this.controller.createPasscode);
+        return this.router;
+    };
+}

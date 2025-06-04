@@ -12,10 +12,10 @@ export default class WebhookHandlers {
         this.db = db
     }
 
-    public walletCreated_handler (data:any) {
-        
+    public async walletCreated_handler (data:any) {
         
 
+        
     }
 
 

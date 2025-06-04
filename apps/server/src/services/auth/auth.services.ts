@@ -6,19 +6,28 @@ import { eq, exists } from "drizzle-orm"
 import { ErrorCode } from "../../enum/errorCode.enum";
 import { generateRef } from "../../utils/generateRef";
 import cache from "../../config/node-cache";
-import termiiServices from "../../providers/termii/termii-services";
 import { systemLogger } from "../../utils/logger";
-import { SENDER_ID } from "../../providers/termii/termii-base";
 import config from "../../config/app.config"
 import { AccessTokenSignOptions, AudienceType, jwtUtility, RefreshTokenSignOptions, TokenPayload } from "../../utils/jwt";
 import { session } from "../../db/schema/session.model";
 import { PasswordUtils } from "../../utils/passwordUtils";
 import { setup } from "db/schema/setup.model";
 import { sendOtp } from "utils/sendOtp";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import * as schemas from "../../db/schema"
+import { Pool } from "pg";
 
 
 type UserType = typeof user.$inferSelect
-class AuthService {
+export default class AuthServices {
+
+
+      private readonly db: NodePgDatabase<typeof schemas> & {$client: Pool};
+    
+    
+        constructor(db: NodePgDatabase<typeof schemas> &{ $client: Pool }){
+            this.db = db
+        }
 
 
     private  RETRY_KEY = `passcode_attempts_`;
@@ -406,5 +415,3 @@ class AuthService {
 }
 
 
-const authServices = new AuthService()
-export default authServices

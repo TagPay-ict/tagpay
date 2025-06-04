@@ -72,14 +72,13 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
 
 
+app.use(`/${config.BASE_PATH}`, root.routes());
 app.use(`/${config.BASE_PATH}/wallet`, authMiddleware, walletRouter)
-app.use(`/${config.BASE_PATH}/auth`, authRouter)
 app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
 app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
 app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
 app.use(`/${config.BASE_PATH}/transaction`, authMiddleware, transactionRouter)
 app.use(`/${config.BASE_PATH}/transfer`, authMiddleware, transferRouter)
-app.use(`/${config.BASE_PATH}`, root.routes());
 
 
 app.use(errorHandler)

@@ -3,10 +3,19 @@ import {Request, Response} from "express"
 import { EventType, passcodeVerificationValidation, phoneNumberVerificationValidation, refreshTokenSchema, registrationValidationSchema } from "./auth.types";
 import authServices from "./auth.services";
 import { HTTPSTATUS } from "config/statusCode.config";
+import AuthServices from "./auth.services";
 
 
 
-class  AuthController {
+export default class AuthControllers {
+
+
+      private readonly services: AuthServices
+    
+        constructor( services: AuthServices){
+            this.services = services
+        }
+
 
 
     public  registerUser = asyncHandler(async(req:Request, res:Response) => {
@@ -17,7 +26,7 @@ class  AuthController {
         const {phoneNumber} = registrationValidationSchema.parse({...req.body})
 
 
-        await authServices.registerUser({phoneNumber})
+        await this.services.registerUser({phoneNumber})
 
         res.status(200).json({
             success: true,
@@ -35,7 +44,7 @@ class  AuthController {
         const {phoneNumber} = registrationValidationSchema.parse({...req.body})
 
 
-        await authServices.loginUser({phoneNumber})
+        await this.services.loginUser({phoneNumber})
 
         res.status(HTTPSTATUS.CREATED).json({
             success: true,
@@ -52,7 +61,7 @@ class  AuthController {
 
         const { otp, phoneNumber } = phoneNumberVerificationValidation.parse({ ...req.body })
 
-        const { verified } = await authServices.verifyPhoneNumber(phoneNumber, otp);
+        const { verified } = await this.services.verifyPhoneNumber(phoneNumber, otp);
 
         if (!verified) {
             return res.status(HTTPSTATUS.UNAUTHORIZED).json({
@@ -65,10 +74,10 @@ class  AuthController {
 
         switch (event) {
             case 'register':
-                tokens = await authServices.createUser(phoneNumber);
+                tokens = await this.services.createUser(phoneNumber);
                 break;
             case 'login':
-                tokens = await authServices.loginWithPhone(phoneNumber);
+                tokens = await this.services.loginWithPhone(phoneNumber);
                 break;
             default:
                 return res.status(HTTPSTATUS.BAD_REQUEST).json({
@@ -90,7 +99,7 @@ class  AuthController {
 
         const { passcode, userId } = req.body;
 
-        const result = await authServices.verifyPasscode(passcode, userId);
+        const result = await this.services.verifyPasscode(passcode, userId);
 
         if (result && result.has_exceeded_attempts) {
             return res.status(HTTPSTATUS.ACCEPTED).json({
@@ -120,7 +129,7 @@ class  AuthController {
         console.log(token, "this is the refresh token from the body")
 
 
-        const {accessToken, refreshToken} = await authServices.refreshToken(token);
+        const {accessToken, refreshToken} = await this.services.refreshToken(token);
 
         console.log("we are fteching the motherfucking refresh token")
 
@@ -140,7 +149,7 @@ class  AuthController {
         const refreshToken = req.headers['x-refresh-token'];
 
 
-         await authServices.logout(refreshToken as string);
+         await this.services.logout(refreshToken as string);
 
         console.log("we are fucking signing out token")
 
@@ -158,7 +167,7 @@ class  AuthController {
         const { phoneNumber } = registrationValidationSchema.parse({ ...req.body })
 
 
-         await authServices.resendToken(phoneNumber as string);
+         await this.services.resendToken(phoneNumber as string);
 
 
 
@@ -179,7 +188,7 @@ class  AuthController {
 
 
 
-        await authServices.createPasscode(userId, passcode)
+        await this.services.createPasscode(userId, passcode)
 
 
         return res.status(HTTPSTATUS.OK).json({
@@ -192,6 +201,3 @@ class  AuthController {
 
 }
 
-
-const authContrller = new AuthController()
-export default authContrller
