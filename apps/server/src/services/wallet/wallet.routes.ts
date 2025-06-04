@@ -3,10 +3,6 @@ import WalletControllers from './wallet.controllers';
 
 
 
-
-
-
-
 export default class WalletRoutes {
 
     private readonly router: express.Router;

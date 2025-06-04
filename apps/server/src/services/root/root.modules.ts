@@ -9,9 +9,9 @@ import { authMiddleware } from "middlewares/auth.middleware";
 
 export class RootModule {
     private readonly router: express.Router;
-    private readonly webhook: WebhookModules;
-    private readonly auth: AuthModules;
-    private readonly wallet: WalletModules;
+    public readonly webhook: WebhookModules;
+    public readonly auth: AuthModules;
+    public readonly wallet: WalletModules;
 
 
     constructor(db: NodePgDatabase<typeof schema> & { $client: Pool }) {

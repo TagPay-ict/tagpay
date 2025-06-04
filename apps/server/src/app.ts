@@ -9,7 +9,6 @@ import verificationService from "./services/verification/verification.services";
 import { authMiddleware } from "middlewares/auth.middleware";
 import userRouter from "services/user/user.routes";
 import onboardingRouter from "services/onboarding/onboarding.routes";
-import "queue/index"
 import billsRouter from "services/bills/bills.routes";
 import redis from "config/redis.config";
 import { systemLogger } from "utils/logger";
@@ -20,14 +19,15 @@ import transactionRouter from "services/transactions/transaction.routes";
 import transferRouter from "services/transfer/transfer.routes";
 import { RootModule } from "services";
 import db from "db/connectDb";
+import { initializeWorkers } from "queue";
 
 
 const root = new RootModule(db)
 
+initializeWorkers(root)
+
 const app: Express = express()
 
-console.log(process.env.NODE_ENV, "THIS IS THE MODE")
-console.log(config.TAGPAY_API_KEY, "na the tagpay api key be this ")
 
 const server = http.createServer(app)
 
