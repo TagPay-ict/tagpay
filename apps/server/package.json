@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/server.js",
-    "dev": "tsx watch --include src/* src/server.ts",
+    "dev": "cross-env NODE_ENV=development \"echo Hello $NODE_ENV\" tsx watch --include src/* src/server.ts",
+    "dev:prod": "cross-env NODE_ENV=production \"echo Hello $NODE_ENV\"  tsx watch --include src/* src/server.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
@@ -57,6 +58,7 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.9",
+    "cross-env": "^7.0.3",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   }

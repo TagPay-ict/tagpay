@@ -1,13 +1,11 @@
 import { RegisterUserType } from "./auth.types";
 import { BadRequestException } from "../../utils/error";
-import db from "../../db/connectDb";
 import { user } from "../../db/schema/user.model";
 import { eq, exists } from "drizzle-orm"
 import { ErrorCode } from "../../enum/errorCode.enum";
 import { generateRef } from "../../utils/generateRef";
 import cache from "../../config/node-cache";
 import { systemLogger } from "../../utils/logger";
-import config from "../../config/app.config"
 import { AccessTokenSignOptions, AudienceType, jwtUtility, RefreshTokenSignOptions, TokenPayload } from "../../utils/jwt";
 import { session } from "../../db/schema/session.model";
 import { PasswordUtils } from "../../utils/passwordUtils";
@@ -38,9 +36,9 @@ export default class AuthServices {
 
         const { phoneNumber } = userdata
 
-        return await db.transaction(async (tx) => {
+        return await this.db.transaction(async (tx) => {
 
-            const userExistsQuery = db.select().from(user).where(eq(user.phone_number, phoneNumber));
+            const userExistsQuery = this.db.select().from(user).where(eq(user.phone_number, phoneNumber));
             const userExists = await tx.select().from(user).where(exists(userExistsQuery)).execute();
 
             if (userExists.length > 0) {
@@ -58,9 +56,9 @@ export default class AuthServices {
 
         const { phoneNumber } = userdata
 
-        return await db.transaction(async (tx) => {
+        return await this.db.transaction(async (tx) => {
 
-            const userExistsQuery = db.select().from(user).where(eq(user.phone_number, phoneNumber));
+            const userExistsQuery = this.db.select().from(user).where(eq(user.phone_number, phoneNumber));
             const userExists = await tx.select().from(user).where(exists(userExistsQuery)).execute();
 
             if (userExists.length === 0) {
@@ -98,7 +96,7 @@ export default class AuthServices {
 
 
     public async createUser(phoneNumber: string): Promise<{ accessToken: string, refreshToken: string }> {
-        return await db.transaction(async (tx) => {
+        return await this.db.transaction(async (tx) => {
 
             const [newUser] = await tx.insert(user).values({ phone_number: phoneNumber }).returning({
                 id: user.id,
@@ -134,7 +132,7 @@ export default class AuthServices {
 
 
     public async loginWithPhone(phoneNumber: string): Promise<{ accessToken: string, refreshToken: string }> {
-        return await db.transaction(async (tx) => {
+        return await this.db.transaction(async (tx) => {
             const [existingUser] = await tx.select().from(user).where(eq(user.phone_number, phoneNumber));
 
             if (!existingUser) {
@@ -211,7 +209,7 @@ export default class AuthServices {
             throw new BadRequestException("Passcode is required", ErrorCode.BAD_REQUEST);
         }
 
-        const [existingUser] = await db.select().from(user).where(eq(user.id, userId));
+        const [existingUser] = await this.db.select().from(user).where(eq(user.id, userId));
 
         if (!existingUser) {
             throw new BadRequestException("User not found", ErrorCode.AUTH_USER_NOT_FOUND);
@@ -226,7 +224,7 @@ export default class AuthServices {
         const hasExceeded = attempts >= MAX_ATTEMPTS
 
         if (hasExceeded) {
-            await db.transaction(async (tx) => {
+            await this.db.transaction(async (tx) => {
                 await tx.update(user).set({ is_flagged: true }).where(eq(user.id, userId));
             });
             systemLogger.error(`User ${userId} account flagged due to too many failed passcode attempts.`);
@@ -269,12 +267,12 @@ export default class AuthServices {
                 throw new BadRequestException("Invalid refresh token", ErrorCode.AUTH_INVALID_TOKEN);
             }
 
-            const [existingUser] = await db.select().from(user).where(eq(user.id, decodedToken.user_id));
+            const [existingUser] = await this.db.select().from(user).where(eq(user.id, decodedToken.user_id));
             if (!existingUser) {
                 throw new BadRequestException("User not found", ErrorCode.AUTH_USER_NOT_FOUND);
             }
 
-            const [existingSession] = await db
+            const [existingSession] = await this.db
                 .select()
                 .from(session)
                 .where(eq(session.id, decodedToken.session_id as string));
@@ -306,7 +304,7 @@ export default class AuthServices {
             const newAccessToken = jwtUtility.signToken('access', tokenPayload, AccessTokenSignOptions);
             const newRefreshToken = jwtUtility.signToken('refresh', tokenPayload, RefreshTokenSignOptions);
 
-            await db.transaction(async (tx) => {
+            await this.db.transaction(async (tx) => {
                 const updatedRefreshTokens = (existingUser.refresh_token || []).filter((token) => token !== refreshToken);
                 updatedRefreshTokens.push(newRefreshToken);
 
@@ -343,12 +341,12 @@ export default class AuthServices {
                 throw new BadRequestException("Invalid refresh token", ErrorCode.AUTH_INVALID_TOKEN);
             }
 
-            const [existingUser] = await db.select().from(user).where(eq(user.id, decodedToken.user_id));
+            const [existingUser] = await this.db.select().from(user).where(eq(user.id, decodedToken.user_id));
             if (!existingUser) {
                 throw new BadRequestException("User not found", ErrorCode.AUTH_USER_NOT_FOUND);
             }
 
-            const [existingSession] = await db
+            const [existingSession] = await this.db
                 .select()
                 .from(session)
                 .where(eq(session.id, decodedToken.session_id as string));
@@ -364,7 +362,7 @@ export default class AuthServices {
             cache.del(RETRY_KEY_FULL);
 
 
-            await db.transaction(async (tx) => {
+            await this.db.transaction(async (tx) => {
                 // Remove session
                 if (existingSession) {
                     await tx.delete(session).where(eq(session.id, decodedToken.session_id as string));
@@ -393,7 +391,7 @@ export default class AuthServices {
         const hashedPasscode = await PasswordUtils.hashPassword(passcode);
 
         try {
-            await db.transaction(async (tx) => {
+            await this.db.transaction(async (tx) => {
 
                 const updatedRows = await tx
                     .update(user)

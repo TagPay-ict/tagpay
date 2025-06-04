@@ -1,21 +1,31 @@
-import db from "../../db/connectDb";
 import { wallet } from "../../db/schema/wallet.model";
 import { eq, exists } from "drizzle-orm";
-import { BadRequestException } from "../../utils/error";
+import { BadRequestException, NotFoundException } from "../../utils/error";
 import { ErrorCode } from "../../enum/errorCode.enum";
 import TagPay from "providers/tagpay/tagpay-modules";
 import { CreateWalletType } from "providers/tagpay/tagpay-types";
 import { user } from "db/schema/user.model";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import * as schemas from "../../db/schema"
 
 
 type WalletType = typeof wallet.$inferInsert
 
-class WalletService {
+export default class WalletServices {
+
+
+    private readonly db: NodePgDatabase<typeof schemas> & { $client: Pool };
+
+
+    constructor(db: NodePgDatabase<typeof schemas> & { $client: Pool }) {
+        this.db = db
+    }
 
     public async createWalletService(data: CreateWalletType, userId: string) {
         const { firstName, bvn, dateOfBirth, email, lastName, nin, phoneNumber, address, tier } = data;
 
-        return await db.transaction(async (tx) => {
+        return await this.db.transaction(async (tx) => {
 
 
             // Check if a user has a wallet created already
@@ -48,7 +58,7 @@ class WalletService {
             }
 
             const walletDetails = createWalletResponse?.data.wallet
-            const customerDetails =createWalletResponse?.data.customer
+            const customerDetails = createWalletResponse?.data.customer
 
             console.log(walletDetails, "this is the wallet details")
             console.log(customerDetails, "this is the customer details")
@@ -83,7 +93,7 @@ class WalletService {
             });
 
             await tx.update(user).set({
-                provider_id:customerDetails.id,
+                provider_id: customerDetails.id,
             }).where(eq(user.id, userId))
 
             return newWallet;
@@ -93,17 +103,20 @@ class WalletService {
 
     }
 
-    public async getWalletByUserId(userId: string): Promise<WalletType > {
+    public async getWalletByUserId(userId: string): Promise<WalletType | {}> {
 
-        const [walletRecord] = await db.select().from(wallet).where(eq(wallet.user_id, userId)).execute();
+        const walletRecord = await this.db.query.wallet.findFirst({
+            where: eq(wallet.user_id, userId)
+        });
 
+    
 
-
+        if (!walletRecord) {
+            return {};
+        }
+        
         return walletRecord;
-
-    }
 
 }
 
-const walletService = new WalletService();
-export default walletService
+}

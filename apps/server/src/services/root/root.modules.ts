@@ -21,7 +21,7 @@ export class RootModule {
 
     private initializeRoutes() {
         this.router.use("/webhooks", this.webhookModules.routes.routes());
-        this.router.use("/auth",  this.webhookModules.routes.routes());
+        this.router.use("/auth",  this.authModules.routes.routes());
         // this.router.use("/wallet", this.walletModules.routes.routes());
         // ...add more routes here
     }
