@@ -1,12 +1,27 @@
 import express from 'express';
-import walletController from "./wallet.controllers";
+import WalletControllers from './wallet.controllers';
 
 
-const walletRouter = express.Router();
 
 
-walletRouter.post("/", walletController.createWalletController);
-walletRouter.get("/", walletController.getWalletController);
 
 
-export default walletRouter;
+
+export default class WalletRoutes {
+
+    private readonly router: express.Router;
+
+    constructor(private readonly controller: WalletControllers) {
+        this.router = express.Router();
+    }
+
+    routes = () => {
+
+        this.router.post("/", this.controller.createWalletController);
+        this.router.get("/", this.controller.getWalletController);
+
+        return this.router
+
+    }
+
+}

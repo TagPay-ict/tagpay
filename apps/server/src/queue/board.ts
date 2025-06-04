@@ -18,7 +18,7 @@ const { addQueue, removeQueue, replaceQueues, setQueues } = createBullBoard({
     serverAdapter,
     options: {
         uiConfig: {
-            boardTitle: "Gabs Board",
+            boardTitle: "Tag Pay Board",
             //   boardLogo: {
             //     path: "https://cdn.my-domain.com/logo.png",
             //     width: "100px",

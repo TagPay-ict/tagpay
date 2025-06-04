@@ -34,7 +34,7 @@ const TagPay_CreateAccountWorker = new Worker(
             }
 
     
-            const createWalletResponse = await walletService.createWalletService(payload, userId)
+            const createWalletResponse = await Walletmod(payload, userId)
 
             console.log(createWalletResponse, "this is the create wallet response")
 

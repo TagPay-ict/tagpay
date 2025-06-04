@@ -6,7 +6,6 @@ import errorHandler from "./middlewares/error.middleware";
 import config from "./config/app.config";
 import walletRouter from "./services/wallet/wallet.routes";
 import verificationService from "./services/verification/verification.services";
-import authRouter from "services/auth/auth.routes";
 import { authMiddleware } from "middlewares/auth.middleware";
 import userRouter from "services/user/user.routes";
 import onboardingRouter from "services/onboarding/onboarding.routes";
@@ -26,6 +25,9 @@ import db from "db/connectDb";
 const root = new RootModule(db)
 
 const app: Express = express()
+
+console.log(process.env.NODE_ENV, "THIS IS THE MODE")
+console.log(config.TAGPAY_API_KEY, "na the tagpay api key be this ")
 
 const server = http.createServer(app)
 
@@ -51,7 +53,6 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
         const response = await verificationService.verifyUserBvn("22263221567")
 
-
         res.status(200).json({
             success: true,
             message: 'Welcome Backend!',
@@ -73,7 +74,6 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
 
 app.use(`/${config.BASE_PATH}`, root.routes());
-app.use(`/${config.BASE_PATH}/wallet`, authMiddleware, walletRouter)
 app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
 app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
 app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)

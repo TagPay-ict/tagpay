@@ -5,4 +5,5 @@ export * from "./setup.model"
 export * from "./billPayment.model"
 export * from "./setup.model"
 export * from "./user.model"
+export * from "./session.model"
 
