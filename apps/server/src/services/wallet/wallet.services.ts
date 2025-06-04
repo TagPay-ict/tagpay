@@ -40,7 +40,6 @@ class WalletService {
                 firstName
             })
 
-            console.log(createWalletResponse?.data, "th is is the wallet service response data")
 
             if (createWalletResponse?.data.status !== true) {
 
@@ -50,6 +49,9 @@ class WalletService {
 
             const walletDetails = createWalletResponse?.data.wallet
             const customerDetails =createWalletResponse?.data.customer
+
+            console.log(walletDetails, "this is the wallet details")
+            console.log(customerDetails, "this is the customer details")
 
             const walletPayload: WalletType = {
                 account_name: walletDetails?.accountName,
@@ -82,7 +84,7 @@ class WalletService {
 
             await tx.update(user).set({
                 provider_id:customerDetails.id,
-            })
+            }).where(eq(user.id, userId))
 
             return newWallet;
 

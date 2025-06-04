@@ -65,8 +65,10 @@ TagPay_CreateAccountWorker.on("completed",async (job: Job) => {
     console.log(`Job ${job.id} completed!`);
 
     const data = job.returnvalue
+
+    console.log(data, "this is the return value of the data")
     
-    await db.update(setup).set({is_account_created:true}).where(eq(setup.user_id,data.user_id))
+    await db.update(setup).set({ is_account_created: true }).where(eq(setup.user_id, data.user_id)).execute();
 
 });
 

@@ -7,7 +7,7 @@ const webhookRouter = express.Router()
 
 
 
-webhookRouter.route("/").post(webhookHandlers.tagpay_handler)
+webhookRouter.route("/tagpay").post(webhookHandlers.tagpay_handler)
 
 
 

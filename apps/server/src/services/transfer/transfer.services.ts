@@ -13,7 +13,7 @@ import { TagPay_ChargeTransferFeeQueue } from "../../queue/queue-list";
 import { QueueRegistry } from "../../queue/queue-registry";
 import TagPay from "providers/tagpay/tagpay-modules";
 import { user } from "db/schema/user.model";
-import { WalletToWalletType } from "providers/tagpay/tagpay-types";
+import { CustomerToCustomerType, WalletToWalletType } from "providers/tagpay/tagpay-types";
 
 
 
@@ -158,13 +158,13 @@ class TransferServices {
 
             // create the transfer payload 
 
-            const transferPayload: WalletToWalletType = {
+            const transferPayload: CustomerToCustomerType = {
                 amount,
-                fromWalletId: sender.wallet?.provider_wallet_id as string,
-                toWalletId: recipient.wallet?.provider_wallet_id as string
+                fromCustomerId: sender.provider_id as string,
+                toCustomerId: recipient.provider_id as string
             }
 
-            const transferResponse = await TagPay.payments.walletToWallet(transferPayload)
+            const transferResponse = await TagPay.payments.customerToCustomer(transferPayload)
 
             //  create new trasaction
 
