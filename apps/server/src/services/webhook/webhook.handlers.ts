@@ -1,22 +1,22 @@
-import { asyncHandler } from "middlewares/asyncHandler";
-import { Request, Response} from "express";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import * as schemas from "../../db/schema"
+import { Pool } from "pg";
 
-class WebhookHandlers {
+
+export default class WebhookHandlers {
+
+    private readonly db: NodePgDatabase<typeof schemas> & {$client: Pool};
 
 
-    public tagpay_handler = asyncHandler(async(req:Request, res:Response) => {
+    constructor(db: NodePgDatabase<typeof schemas> &{ $client: Pool }){
+        this.db = db
+    }
 
-        res.sendStatus(200)
+    public walletCreated_handler (data:any) {
+        
+        
 
-        const packet = req.body
-
-        console.log(packet, "this is the packaet received from the webhook")
-
-    })
+    }
 
 
 }
-
-
-const webhookHandlers = new WebhookHandlers()
-export default webhookHandlers

@@ -1,14 +1,15 @@
-import express from "express"
-import webhookHandlers from "./webhook.handlers"
+import express from "express";
+import WebhookControllers from "./webhook.controllers";
 
+export class WebhookRoutes {
+    private readonly router: express.Router;
 
+    constructor(private readonly controllers: WebhookControllers) {
+        this.router = express.Router();
+    }
 
-const webhookRouter = express.Router()
-
-
-
-webhookRouter.route("/tagpay").post(webhookHandlers.tagpay_handler)
-
-
-
-export default webhookRouter
+    routes = () => {
+        this.router.post("/tagpay", this.controllers.tagpay_controllers);
+        return this.router;
+    };
+}

@@ -1,11 +1,9 @@
 import { NipTransferType, TagTransferType } from "./transfer.types";
-import { BadRequestException } from "../../utils/error";
+import { BadRequestException, InternalServerException } from "../../utils/error";
 import { ErrorCode } from "../../enum/errorCode.enum";
 import { wallet } from "../../db/schema/wallet.model";
 import db from "../../db/connectDb";
 import { eq } from "drizzle-orm";
-import tagpayWalletApi from "../../providers/tagpay/tagpay-wallet.api";
-import tagpayTransferApi from "../../providers/tagpay/tagpay-transfer.api";
 import { transaction } from "../../db/schema/transactions.model";
 import transactionsServices from "../transactions/transactions.services";
 import { TransactionType } from "../transactions/transaction.types";
@@ -14,6 +12,7 @@ import { QueueRegistry } from "../../queue/queue-registry";
 import TagPay from "providers/tagpay/tagpay-modules";
 import { user } from "db/schema/user.model";
 import { CustomerToCustomerType, WalletToWalletType } from "providers/tagpay/tagpay-types";
+import { systemLogger } from "utils/logger";
 
 
 
@@ -126,57 +125,64 @@ class TransferServices {
 
         // find the sender data which is the user 
 
-
-        await db.transaction(async (tx) => {
-
-
-            const sender = await tx.query.user.findFirst({
-                where: eq(user.id, userId),
-                with: {
-                    wallet: true
+        try {
+            
+            await db.transaction(async (tx) => {
+    
+    
+                const sender = await tx.query.user.findFirst({
+                    where: eq(user.id, userId),
+                    with: {
+                        wallet: true
+                    }
+                })
+    
+    
+                console.log(sender, "this is the sender")
+    
+    
+                if (!sender) {
+                    throw new BadRequestException("Sender not found", ErrorCode.BAD_REQUEST)
                 }
-            })
-
-
-            console.log(sender, "this is the sender")
-
-
-            if (!sender) {
-                throw new BadRequestException("Sender not found", ErrorCode.BAD_REQUEST)
-            }
-
-            const recipient = await tx.query.user.findFirst({
-                where: eq(user.tag, tag),
-                with: {
-                    wallet: true
+    
+                const recipient = await tx.query.user.findFirst({
+                    where: eq(user.tag, tag),
+                    with: {
+                        wallet: true
+                    }
+                })
+                if (!recipient) {
+                    throw new BadRequestException(`Recipient with tag ${tag} not found`, ErrorCode.BAD_REQUEST)
                 }
+    
+    
+                // create the transfer payload 
+    
+                const transferPayload: CustomerToCustomerType = {
+                    amount,
+                    fromCustomerId: sender.provider_id as string,
+                    toCustomerId: recipient.provider_id as string
+                }
+    
+                const transferResponse = await TagPay.payments.customerToCustomer(transferPayload)
+    
+                //  create new trasaction
+    
+                // const transactionPayload:TransactionType = {
+    
+                // } 
+    
+                // await db.insert(transaction).values(transactionPayload)
+    
+                console.log(transferResponse.data, "this is the transfer response")
+    
             })
-            if (!recipient) {
-                throw new BadRequestException(`Recipient with tag ${tag} not found`, ErrorCode.BAD_REQUEST)
-            }
-
-
-            // create the transfer payload 
-
-            const transferPayload: CustomerToCustomerType = {
-                amount,
-                fromCustomerId: sender.provider_id as string,
-                toCustomerId: recipient.provider_id as string
-            }
-
-            const transferResponse = await TagPay.payments.customerToCustomer(transferPayload)
-
-            //  create new trasaction
-
-            const transactionPayload:TransactionType = {
-
-            } 
-
-            await db.insert(transaction).values(transactionPayload)
-
-            console.log(transferResponse.data, "this is the transfer response")
-
-        })
+            
+        } catch (error) {
+            console.log(error)
+            systemLogger.error(error)
+            throw new InternalServerException("Failed to make transfer")
+        }
 
 
 
