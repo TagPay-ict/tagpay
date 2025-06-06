@@ -35,6 +35,8 @@ export const wallet = pgTable("wallet", {
 })
 
 
+
+
 export const walletRelations = relations(wallet, ({ one, many }) => ({
     user: one(user, { fields: [wallet.user_id], references: [user.id] }),
 

@@ -109,16 +109,19 @@ export default class WalletServices {
             where: eq(wallet.user_id, userId)
         });
 
-    
+
 
         if (!walletRecord) {
             return {};
         }
-        
+
         return walletRecord;
 
-}
+    }
 
+    public async getUserBalance (userId:string) {
+        
+    }
 }
 
 

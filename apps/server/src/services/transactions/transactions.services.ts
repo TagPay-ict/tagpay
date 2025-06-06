@@ -1,13 +1,24 @@
 import {transaction} from "../../db/schema/transactions.model";
-import db from "../../db/connectDb";
 import {and, eq, inArray} from "drizzle-orm";
 import {BadRequestException} from "../../utils/error";
 import {ErrorCode} from "../../enum/errorCode.enum";
 import {TransactionType} from "./transaction.types";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+import * as schemas from "../../db/schema"
+
+
+export default class TransactionsServices {
 
 
 
-class TransactionsServices {
+        private readonly db: NodePgDatabase<typeof schemas> & { $client: Pool };
+    
+    
+        constructor(db: NodePgDatabase<typeof schemas> & { $client: Pool }) {
+            this.db = db
+        }
+
 
     public async getTransactionById(id:string):Promise<TransactionType> {
 
@@ -15,7 +26,7 @@ class TransactionsServices {
             throw new BadRequestException("User Id is required ", ErrorCode.BAD_REQUEST)
         }
 
-        const transactions = await db.select().from(transaction).where(eq(transaction.user_id, id)).execute()
+        const transactions = await this.db.select().from(transaction).where(eq(transaction.user_id, id)).execute()
 
         if(transactions.length === 0){
             throw new BadRequestException("No transactions found", ErrorCode.BAD_REQUEST)
@@ -28,10 +39,10 @@ class TransactionsServices {
 
     public async createTransaction(data:TransactionType):Promise<TransactionType> {
 
-        const transactions = await db.insert(transaction).values(data).returning().execute()
+        const transactions = await this.db.insert(transaction).values(data).returning().execute()
 
         if(transactions.length === 0){
-            throw new BadRequestException("Transaction not created", ErrorCode.BAD_REQUEST)
+            throw new BadRequestException("Failed to create transaction", ErrorCode.BAD_REQUEST)
         }
 
         return transactions[0]
@@ -39,7 +50,7 @@ class TransactionsServices {
 
 
 
-    public async getUserTransactions(userId: string, includes?: string[]) {
+    public async getUserTransactions(userId: string, includes?: string[], limit?:number) {
      
 
         const conditions = [eq(transaction.user_id, userId)];
@@ -55,12 +66,13 @@ class TransactionsServices {
             }
         }
 
-        const transactions = await db.query.transaction.findMany({
+        const transactions = await this.db.query.transaction.findMany({
             where: and(...conditions),
             orderBy: (t, { desc }) => [desc(t.created_at)],
             with: {
-                user: true, // this includes the associated user record
+                user: true, 
             },
+            limit: limit
         });
 
         console.log(transactions, "na the transactions be this ooooooooooooooo")
@@ -69,10 +81,6 @@ class TransactionsServices {
   }
 
 
-
-
 }
 
 
-const transactionsServices = new TransactionsServices();
-export default transactionsServices;

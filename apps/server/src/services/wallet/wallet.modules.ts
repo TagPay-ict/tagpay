@@ -3,7 +3,6 @@ import { NodePgDatabase } from "drizzle-orm/node-postgres"
 import * as schema from "../../db/schema"
 import { Pool } from "pg"
 import WalletServices from "./wallet.services"
-import WalletController from "./wallet.controllers"
 import WalletControllers from "./wallet.controllers"
 import WalletRoutes from "./wallet.routes"
 

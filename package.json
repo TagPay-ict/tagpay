@@ -44,6 +44,7 @@
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.14.1",
     "@types/pg": "^8.11.13",
+    "dinero.js": "^1.9.1",
     "node-cache": "^5.1.2"
   }
 }

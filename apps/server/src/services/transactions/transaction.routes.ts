@@ -1,11 +1,27 @@
 import express from "express"
-import transactionControllers from "./transaction.controllers"
+import TransactionControllers from "./transaction.controllers";
 
 
-const transactionRouter = express.Router()
 
 
-transactionRouter.get("/" ,transactionControllers.getUserTransactions)
 
 
-export default transactionRouter
+export default class TransactionRoutes {
+
+    private readonly router: express.Router;
+
+    constructor(private readonly controller: TransactionControllers) {
+        this.router = express.Router();
+    }
+
+    routes = () => {
+
+        this.router.post("/", this.controller.getUserTransactions);
+
+        return this.router
+
+    }
+
+}
+
+
