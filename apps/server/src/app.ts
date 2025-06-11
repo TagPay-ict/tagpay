@@ -4,7 +4,6 @@ import cookieParser from "cookie-parser"
 import bodyParser from "body-parser"
 import errorHandler from "./middlewares/error.middleware";
 import config from "./config/app.config";
-import walletRouter from "./services/wallet/wallet.routes";
 import verificationService from "./services/verification/verification.services";
 import { authMiddleware } from "middlewares/auth.middleware";
 import userRouter from "services/user/user.routes";
@@ -15,8 +14,7 @@ import { systemLogger } from "utils/logger";
 import { ErrorCode } from "enum/errorCode.enum";
 import { InternalServerException } from "utils/error";
 import { setupBullBoard } from "./queue/board";
-import transactionRouter from "services/transactions/transaction.routes";
-import transferRouter from "services/transfer/transfer.routes";
+
 import { RootModule } from "services";
 import db from "db/connectDb";
 import { initializeWorkers } from "queue";
@@ -77,8 +75,6 @@ app.use(`/${config.BASE_PATH}`, root.routes());
 app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
 app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
 app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
-app.use(`/${config.BASE_PATH}/transaction`, authMiddleware, transactionRouter)
-app.use(`/${config.BASE_PATH}/transfer`, authMiddleware, transferRouter)
 
 
 app.use(errorHandler)

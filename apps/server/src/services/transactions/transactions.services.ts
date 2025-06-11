@@ -8,7 +8,7 @@ import { Pool } from "pg";
 import * as schemas from "../../db/schema"
 
 
-export default class TransactionsServices {
+export  class TransactionsServices {
 
 
 
@@ -20,7 +20,7 @@ export default class TransactionsServices {
         }
 
 
-    public async getTransactionById(id:string):Promise<TransactionType> {
+     async getTransactionById(id:string):Promise<TransactionType> {
 
         if(!id){
             throw new BadRequestException("User Id is required ", ErrorCode.BAD_REQUEST)
@@ -56,7 +56,6 @@ export default class TransactionsServices {
         const conditions = [eq(transaction.user_id, userId)];
 
         if (includes && includes.length > 0) {
-            // Only allow valid enum values
             const validPaymentTypes = ["INTER_BANK", "WALLET_TRANSFER"] as const;
             const filteredIncludes = includes.filter((type): type is typeof validPaymentTypes[number] =>
                 validPaymentTypes.includes(type as any)

@@ -59,7 +59,6 @@ class TagPayTransferApi  extends  TagPayBaseClass{
         } catch (error: any) {
 
             console.log(error?.response.data, "this is the error from the transfer")
-            console.log(error?.response.data.message, "this is the error from the transfer")
             systemLogger.error(error?.response.data.message as string, "this is the error from the transfer")
             throw error?.response.data
         }
@@ -68,6 +67,23 @@ class TagPayTransferApi  extends  TagPayBaseClass{
 
     }
 
+    public async getBankList() {
+
+        try {
+
+            const response = await this.axios.get("/transfer/banks")
+
+            console.log(response, "this is the response to the bank list ")
+
+            return  response
+            
+        } catch (error:any) {
+            console.log(error?.response.data, "this is the error from the transfer")
+            systemLogger.error(error?.response.data.message as string, "this is the error from the transfer")
+            throw error?.response.data
+        }
+
+    }
 
 
 }

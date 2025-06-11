@@ -20,15 +20,15 @@ type UserType = typeof user.$inferSelect
 export default class AuthServices {
 
 
-      private readonly db: NodePgDatabase<typeof schemas> & {$client: Pool};
-    
-    
-        constructor(db: NodePgDatabase<typeof schemas> &{ $client: Pool }){
-            this.db = db
-        }
+    private readonly db: NodePgDatabase<typeof schemas> & { $client: Pool };
 
 
-    private  RETRY_KEY = `passcode_attempts_`;
+    constructor(db: NodePgDatabase<typeof schemas> & { $client: Pool }) {
+        this.db = db
+    }
+
+
+    private RETRY_KEY = `passcode_attempts_`;
 
 
 
@@ -45,7 +45,7 @@ export default class AuthServices {
                 throw new BadRequestException("User already exists", ErrorCode.AUTH_EMAIL_ALREADY_EXISTS);
             }
 
-         
+
             await sendOtp(phoneNumber)
 
         })
@@ -72,9 +72,9 @@ export default class AuthServices {
     }
 
 
-    public async resendToken(phoneNumber:string) {
+    public async resendToken(phoneNumber: string) {
 
-       await sendOtp(phoneNumber)
+        await sendOtp(phoneNumber)
 
     }
 
@@ -150,7 +150,7 @@ export default class AuthServices {
                     const verifiedToken = jwtUtility.verifyRefreshToken(token, { audience: AudienceType.MobileApp, subject: existingUser.id, issuer: decoded?.iss as string });
                     return verifiedToken?.user_id !== existingUser.id; // foreign token
                 } catch {
-                    return false; 
+                    return false;
                 }
             });
 
@@ -331,7 +331,7 @@ export default class AuthServices {
             // Decode and verify the refresh token
             const decoded = jwtUtility.decodeToken(refreshToken);
 
-            const decodedToken =  jwtUtility.verifyRefreshToken(refreshToken, {
+            const decodedToken = jwtUtility.verifyRefreshToken(refreshToken, {
                 audience: AudienceType.MobileApp,
                 subject: decoded?.sub as string,
                 issuer: decoded?.iss as string

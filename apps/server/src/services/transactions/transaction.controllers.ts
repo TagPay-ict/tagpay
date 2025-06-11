@@ -1,6 +1,6 @@
 import { asyncHandler } from "middlewares/asyncHandler";
 import { Request, Response } from "express"
-import TransactionsServices from "./transactions.services";
+import { TransactionsServices } from "./transactions.services";
 
 export default class TransactionControllers {
 

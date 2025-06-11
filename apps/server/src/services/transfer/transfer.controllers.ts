@@ -3,8 +3,17 @@ import { Response, Request} from "express"
 import {nipTransferSchema, tagTransferSchema} from "./transfer.types";
 import transferServices from "./transfer.services";
 import { HTTPSTATUS } from "config/statusCode.config";
+import TransferServices from "./transfer.services";
 
-class TransferControllers {
+export default class TransferControllers {
+
+
+        private readonly services: TransferServices
+        
+            constructor( services: TransferServices){
+                this.services = services
+            }
+
 
     public nipTransferController = asyncHandler(async (req:Request, res: Response) => {
 
@@ -26,7 +35,7 @@ class TransferControllers {
             }
         }
 
-        const response = await transferServices.nipTransfer(payload  , user.id)
+        const response = await this.services.nipTransfer(payload  , user.id)
 
     })
 
@@ -46,7 +55,7 @@ class TransferControllers {
 
         console.log("this transfer is fucking running")
 
-         await transferServices.tagTransfer(payload  , user.id)
+         await this.services.tagTransfer(payload  , user.id)
 
 
         res.status(HTTPSTATUS.ACCEPTED).json({
@@ -56,10 +65,21 @@ class TransferControllers {
     })
 
 
+    public getBankList = asyncHandler(async (req:Request, res: Response) => {
+
+       
+       const data = await this.services.getBankList()
+
+
+        res.status(HTTPSTATUS.ACCEPTED).json({
+            success: true,
+            message: "Bank list fetched successfully",
+            data
+        })
+    })
+
 
 
 }
 
 
-const transferControllers = new TransferControllers()
-export default transferControllers

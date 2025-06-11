@@ -5,7 +5,6 @@ import { wallet } from "../../db/schema/wallet.model";
 import db from "../../db/connectDb";
 import { eq } from "drizzle-orm";
 import { transaction } from "../../db/schema/transactions.model";
-import transactionsServices from "../transactions/transactions.services";
 import { TransactionType } from "../transactions/transaction.types";
 import { TagPay_ChargeTransferFeeQueue } from "../../queue/queue-list";
 import { QueueRegistry } from "../../queue/queue-registry";
@@ -13,11 +12,20 @@ import TagPay from "providers/tagpay/tagpay-modules";
 import { user } from "db/schema/user.model";
 import { CustomerToCustomerType, WalletToWalletType } from "providers/tagpay/tagpay-types";
 import { systemLogger } from "utils/logger";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import * as schemas from "../../db/schema"
+import { Pool } from "pg";
 
 
+export default class TransferServices {
 
-class TransferServices {
 
+        private readonly db: NodePgDatabase<typeof schemas> & { $client: Pool };
+    
+    
+        constructor(db: NodePgDatabase<typeof schemas> & { $client: Pool }) {
+            this.db = db
+        }
 
 
     public calculateCharges(amount: number): number {
@@ -41,7 +49,7 @@ class TransferServices {
         }
 
 
-        await db.transaction(async (tx) => {
+        await this.db.transaction(async (tx) => {
 
             // check if the user has a wallet
             const userWallet = await tx.select().from(wallet).where(eq(wallet.user_id, userId)).execute()
@@ -105,7 +113,7 @@ class TransferServices {
 
 
 
-            await transactionsServices.createTransaction(transactionPayload)
+            // await TransactionsServices.(transactionPayload)
 
             // charge the user transfer fee
 
@@ -127,7 +135,7 @@ class TransferServices {
 
         try {
             
-            await db.transaction(async (tx) => {
+            await this.db.transaction(async (tx) => {
     
     
                 const sender = await tx.query.user.findFirst({
@@ -191,8 +199,19 @@ class TransferServices {
 
 
     }
+
+    public async getBankList(): Promise<Array<{ code: string; name: string }>> {
+
+        const bankList = await TagPay.payments.getBankList()
+
+
+        if (bankList.data.status !== true) {
+            throw new InternalServerException("Failed to get bank list")
+        }
+
+        return bankList.data.banks as Array<{ code: string; name: string }>;
+
+    }
 }
 
 
-const transferServices = new TransferServices()
-export default transferServices;

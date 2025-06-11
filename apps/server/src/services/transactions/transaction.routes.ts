@@ -16,7 +16,7 @@ export default class TransactionRoutes {
 
     routes = () => {
 
-        this.router.post("/", this.controller.getUserTransactions);
+        this.router.get("/", this.controller.getUserTransactions);
 
         return this.router
 

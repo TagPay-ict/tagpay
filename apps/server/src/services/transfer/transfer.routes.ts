@@ -1,12 +1,26 @@
 import express from 'express';
-import transferControllers from './transfer.controllers';
-import { checkInsufficientBalance } from 'middlewares/insufficientBalance.middleware';
+
+import TransferControllers from './transfer.controllers';
 
 
-const transferRouter = express.Router();
 
 
-transferRouter.post("/tag", transferControllers.tagTransferController);
 
 
-export default transferRouter;
+export default class TransferRoutes {
+
+    private readonly router: express.Router;
+
+    constructor(private readonly controller: TransferControllers) {
+        this.router = express.Router();
+    }
+
+    routes = () => {
+
+        this.router.post("/tag", this.controller.tagTransferController);
+        this.router.get("/bank_list", this.controller.getBankList)
+
+        return this.router
+    }
+
+}
