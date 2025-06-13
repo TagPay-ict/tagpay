@@ -109,6 +109,7 @@ export default class TransferServices {
                 reference: transferResponse.data.reference,
                 status: "COMPLETED",
                 session_id: transferResponse.data.sessionId,
+             
             }
 
 
@@ -209,9 +210,37 @@ export default class TransferServices {
             throw new InternalServerException("Failed to get bank list")
         }
 
-        return bankList.data.banks as Array<{ code: string; name: string }>;
+        return bankList.data.banks as Array<{ code: string; name: string }>
 
     }
+
+
+    public async resolveBank(sortCode:string, accountNumber:string) {
+
+        try {
+            
+            const bankDetails = await TagPay.payments.resolveAccount(sortCode, accountNumber)
+    
+            console.log(bankDetails, "thisis ther bank details")
+    
+            if (bankDetails.data.status !== true) {
+                throw new BadRequestException("Failed to resolve account", ErrorCode.BAD_REQUEST)
+            }
+    
+            return bankDetails.data.account ;
+        } catch (error) {
+            console.log(error, "this is the error from the resolve")
+            throw new BadRequestException("Failed to resolve account check account details and try again", ErrorCode.BAD_REQUEST)
+
+        }
+
+
+    }
+
+
+    
+
+
 }
 
 

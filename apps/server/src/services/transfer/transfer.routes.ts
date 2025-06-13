@@ -19,6 +19,7 @@ export default class TransferRoutes {
 
         this.router.post("/tag", this.controller.tagTransferController);
         this.router.get("/bank_list", this.controller.getBankList)
+        this.router.get("/resolve_details", this.controller.resolveBank)
 
         return this.router
     }

@@ -73,7 +73,24 @@ class TagPayTransferApi  extends  TagPayBaseClass{
 
             const response = await this.axios.get("/transfer/banks")
 
-            console.log(response, "this is the response to the bank list ")
+
+            return  response
+            
+        } catch (error:any) {
+            console.log(error?.response.data, "this is the error from the transfer")
+            systemLogger.error(error?.response.data.message as string, "this is the error from the transfer")
+            throw error?.response.data
+        }
+
+    }
+
+
+    public async resolveAccount(sortCode:string, accountNumber:string){
+
+        try {
+
+            const response = await this.axios.get(`/transfer/account/details?sortCode=${sortCode}&accountNumber=${accountNumber}`)
+            
 
             return  response
             

@@ -79,6 +79,28 @@ export default class TransferControllers {
     })
 
 
+    public resolveBank = asyncHandler(async (req:Request, res: Response) => {
+
+        const { sortCode, accountNumber } = req.query;
+
+
+        if (typeof sortCode !== "string" || typeof accountNumber !== "string") {
+            return res.status(HTTPSTATUS.BAD_REQUEST).json({
+                success: false,
+                message: "sortCode and accountNumber are required ",
+            });
+        }
+
+        const data = await this.services.resolveBank(sortCode, accountNumber);
+
+        res.status(HTTPSTATUS.ACCEPTED).json({
+            success: true,
+            message: "Account details resolved sucessfully",
+            data
+        })
+    })
+
+
 
 }
 
