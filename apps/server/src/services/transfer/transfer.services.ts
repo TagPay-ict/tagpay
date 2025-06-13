@@ -15,16 +15,19 @@ import { systemLogger } from "utils/logger";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schemas from "../../db/schema"
 import { Pool } from "pg";
+import { TransactionsServices } from "services/transactions/transactions.services";
 
 
 export default class TransferServices {
 
 
         private readonly db: NodePgDatabase<typeof schemas> & { $client: Pool };
+        public transactions: TransactionsServices;
+        
     
-    
-        constructor(db: NodePgDatabase<typeof schemas> & { $client: Pool }) {
-            this.db = db
+        constructor(db: NodePgDatabase<typeof schemas> & { $client: Pool }, transactions: TransactionsServices) {
+            this.db = db;
+            this.transactions = transactions;
         }
 
 
@@ -41,7 +44,7 @@ export default class TransferServices {
 
     public async nipTransfer(data: NipTransferType, userId: string) {
 
-        const { amount, customerId, metadata, narration, sortCode, accountNumber } = data
+        const { amount, customerId, metadata, narration, sortCode, accountNumber , accountName, bankName } = data
 
 
         if (!userId) {
@@ -77,6 +80,8 @@ export default class TransferServices {
                 narration: narration,
                 customerId: customerId,
                 metadata: metadata,
+                accountName: accountName,
+                bankName: bankName
             }
 
             const transferResponse = await TagPay.payments.nipTransfer(transferPayload)
@@ -107,14 +112,21 @@ export default class TransferServices {
                 narration: narration,
                 metadata: metadata,
                 reference: transferResponse.data.reference,
-                status: "COMPLETED",
+                status: "PENDING",
                 session_id: transferResponse.data.sessionId,
-             
+                recipient: {
+                    account_name: accountName,
+                    sort_code: sortCode,
+                    bank_name: bankName,
+                    account_number: accountNumber
+                },
+                sender: {
+                    
+                }
             }
 
 
-
-            // await TransactionsServices.(transactionPayload)
+            this.transactions.createTransaction(transactionPayload)            
 
             // charge the user transfer fee
 

@@ -25,7 +25,7 @@ export class RootModule {
         this.auth = new AuthModules(db)
         this.wallet = new WalletModules(db)
         this.transactions = new TransactionModules(db)
-        this.transfer = new TransferModules(db)
+        this.transfer = new TransferModules(db, this.transactions.services)
 
         this.initializeRoutes();
     }

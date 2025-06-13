@@ -16,7 +16,7 @@ export const nipTransferSchema = z.object({
     bankName: z.string().optional(),
     customerId: z.string(),
     metadata: z.object({}).optional(),
-
+    accountName: z.string()
 })
 
 

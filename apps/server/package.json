@@ -14,7 +14,7 @@
     "db:studio": "drizzle-kit studio",
     "lint": "eslint src/*",
     "lint:fix": "eslint src/* --fix",
-      "build": "tsc"
+    "build": "tsc build"
   },
   "repository": {
     "type": "git",

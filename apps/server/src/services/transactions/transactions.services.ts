@@ -80,6 +80,13 @@ export  class TransactionsServices {
   }
 
 
+    public async moneyInAndMoneyOut(userId: string, includes?: string[], limit?:number) {
+     
+
+
+  }
+
+
 }
 
 
