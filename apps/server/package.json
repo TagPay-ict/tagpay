@@ -13,7 +13,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "lint": "eslint src/*",
-    "lint:fix": "eslint src/* --fix"
+    "lint:fix": "eslint src/* --fix",
+      "build": "tsc"
   },
   "repository": {
     "type": "git",
