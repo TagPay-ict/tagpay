@@ -35,15 +35,6 @@
     "husky": "^9.1.7",
     "prettier": "3.5.3",
     "turbo": "^2.4.4"
-  },
-  "dependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/cookie-parser": "^1.4.8",
-    "@types/express": "^5.0.1",
-    "@types/morgan": "^1.9.9",
-    "@types/node": "^22.14.1",
-    "@types/pg": "^8.11.13",
-    "dinero.js": "^1.9.1",
-    "node-cache": "^5.1.2"
   }
+
 }
