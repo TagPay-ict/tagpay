@@ -31,7 +31,7 @@ const prod_config = {
     BUYPOWER_API_KEY: getEnv('BUYPOWER_API_KEY'),
     BUYPOWER_BASE_URL: getEnv('BUYPOWER_BASE_URL'),
     TERMII_API_KEY: getEnv("PROD_TERMII_API_KEY"),
-
+    SENDER_ID: getEnv("PROD_SENDER_ID"),
 };
 
 const dev_config = {
@@ -44,6 +44,8 @@ const dev_config = {
     BUYPOWER_API_KEY: getEnv('BUYPOWER_API_KEY'),
     BUYPOWER_BASE_URL: getEnv('BUYPOWER_BASE_URL'),
     TERMII_API_KEY: getEnv("DEV_TERMII_API_KEY"),
+    SENDER_ID: getEnv("DEV_SENDER_ID"),
+
 
 };
 

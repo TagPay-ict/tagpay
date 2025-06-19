@@ -114,8 +114,8 @@ class TermiServices extends TermiiBaseClass {
             return data
 
         } catch (error: any) {
-
             console.log(error?.response.data, "this is the error from termii")
+            throw error
 
         }
 

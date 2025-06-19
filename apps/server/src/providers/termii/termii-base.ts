@@ -15,4 +15,3 @@ export abstract class TermiiBaseClass {
     protected constructor() { }
 }
 
-export const SENDER_ID = "Soranix"
