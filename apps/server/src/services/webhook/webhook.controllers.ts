@@ -1,7 +1,7 @@
-import { asyncHandler } from "middlewares/asyncHandler";
 import { Request, Response} from "express";
 import { TAGPAY_EVENTS_TYPE } from "./webhook.types";
 import WebhookHandlers from "./webhook.handlers";
+import { asyncHandler } from "middlewares/asyncHandler";
 
 export default class WebhookControllers {
 

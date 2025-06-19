@@ -1,4 +1,4 @@
-import { fileURLToPath, pathToFileURL } from "url";
+import { pathToFileURL } from "url";
 import path from "path";
 import fs from "fs/promises";
 import { Worker } from "bullmq";
@@ -9,8 +9,7 @@ import { RootModule } from "services";
 
 
 export async function initializeWorkers(dependencies:RootModule) {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
+    // Use Node.js globals for __filename and __dirname
     const workersPath = path.resolve(__dirname, "workers");
     const workers: Array<Worker> = [];
 

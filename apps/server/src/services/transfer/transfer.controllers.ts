@@ -19,9 +19,9 @@ export default class TransferControllers {
 
         const user = req.user
 
-        const modifiedNipTransferSchema = nipTransferSchema.pick({amount: true, narration: true,accountNumber: true, sortCode: true,bankName: true,})
+        const modifiedNipTransferSchema = nipTransferSchema.pick({amount: true, narration: true,accountNumber: true, sortCode: true,bankName: true,accountName:true})
 
-        const {amount, narration,accountNumber, sortCode,bankName} = modifiedNipTransferSchema.parse({...req.body})
+        const {amount, narration,accountNumber, sortCode,bankName,accountName } = modifiedNipTransferSchema.parse({...req.body})
 
         const payload = {
             amount: amount,
@@ -32,7 +32,8 @@ export default class TransferControllers {
             customerId: user.provider_id,
             metadata: {
                 userId: user.id
-            }
+            },
+            accountName
         }
 
         const response = await this.services.nipTransfer(payload  , user.id)

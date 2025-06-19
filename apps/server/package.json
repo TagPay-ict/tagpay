@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Api for tagpay",
   "private": "true",
-  "main": "server.js ",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node dist/server.js",
+    "start": "node ./dist/server.js",
     "dev": "cross-env NODE_ENV=development tsx watch --include src/* src/server.ts  ",
     "dev:prod": "cross-env NODE_ENV=production  tsx watch --include src/* src/server.ts",
     "db:generate": "drizzle-kit generate",
@@ -14,7 +15,7 @@
     "db:studio": "drizzle-kit studio",
     "lint": "eslint src/*",
     "lint:fix": "eslint src/* --fix",
-    "build": "tsc "
+    "build": "tsc --build"
   },
   "repository": {
     "type": "git",
@@ -61,6 +62,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.9",
     "cross-env": "^7.0.3",
+    "tsconfig-paths": "^4.2.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   }
