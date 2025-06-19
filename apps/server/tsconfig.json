@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "target": "es2023",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "dist",
     "baseUrl": "./src",
     "rootDir": "src",
@@ -13,7 +13,18 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "sourceMap": false,
-
+    "paths": {
+      "services/*": ["services/*"],
+      "utils/*": ["utils/*"],
+      "middlewares/*": ["middlewares/*"],
+      "config/*": ["config/*"],
+      "queue/*": ["queue/*"],
+      "db/*": ["db/*"],
+      "enum/*": ["enum/*"],
+      "@types/*": ["@types/*"],
+      "lib/*": ["lib/*"],
+      "providers/*": ["providers/*"],
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

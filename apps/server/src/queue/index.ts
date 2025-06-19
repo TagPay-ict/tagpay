@@ -8,7 +8,7 @@ import { RootModule } from "services";
 
 
 
-export async function initializeWorkers(dependencies:RootModule) {
+export async function initializeWorkers(dependencies: RootModule) {
     // Use Node.js globals for __filename and __dirname
     const workersPath = path.resolve(__dirname, "workers");
     const workers: Array<Worker> = [];
@@ -18,25 +18,27 @@ export async function initializeWorkers(dependencies:RootModule) {
 
     const files = await fs.readdir(workersPath);
     for (const file of files) {
+
+        
         if (file.endsWith(".worker.ts") || file.endsWith(".worker.js")) {
             const workerPath = path.join(workersPath, file);
             const workerUrl = pathToFileURL(workerPath).href;
 
             try {
 
-                const module = await import(workerUrl);
+                const module = require(workerPath); 
                 if (typeof module.default === "function") {
                     const worker = module.default(dependencies);
                     worker.run()
                     workers.push(worker);
                 }
-                
+
             } catch (error) {
                 console.error(`Failed to load worker ${file}:`, error);
 
             }
 
-       
+
         }
     }
 

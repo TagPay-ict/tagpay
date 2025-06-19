@@ -11,7 +11,6 @@ const shared_config = {
     ACCESS_TOKEN_EXPIRES_IN: getEnv("JWT_ACCESS_TOKEN_EXPIRES_IN"),
     REFRESH_TOKEN_EXPIRES_IN: getEnv("JWT_REFRESH_TOKEN_EXPIRES_IN"),
     TERMII_BASE_URL: getEnv("TERMII_BASE_URL"),
-    TERMII_API_KEY: getEnv("TERMII_API_KEY"),
     ENCRYPTION_SECRET: getEnv('ENCRYPTION_SECRET'),
     TAGPAY_BASE_URL: getEnv("TAGPAY_BASE_URL"),
     DOJAH_BASE_URL: getEnv("DOJAH_PROD_URL"),
@@ -19,6 +18,8 @@ const shared_config = {
     DOJAH_APP_ID: getEnv("DOJAH_PROD_APP_ID"),
 
 };
+
+
 
 const prod_config = {
     ...shared_config,
@@ -29,6 +30,8 @@ const prod_config = {
     TAGPAY_API_KEY: getEnv('TAGPAY_PROD_API_KEY'),
     BUYPOWER_API_KEY: getEnv('BUYPOWER_API_KEY'),
     BUYPOWER_BASE_URL: getEnv('BUYPOWER_BASE_URL'),
+    TERMII_API_KEY: getEnv("PROD_TERMII_API_KEY"),
+
 };
 
 const dev_config = {
@@ -40,6 +43,8 @@ const dev_config = {
     TAGPAY_API_KEY: getEnv('TAGPAY_DEV_API_KEY'),
     BUYPOWER_API_KEY: getEnv('BUYPOWER_API_KEY'),
     BUYPOWER_BASE_URL: getEnv('BUYPOWER_BASE_URL'),
+    TERMII_API_KEY: getEnv("DEV_TERMII_API_KEY"),
+
 };
 
 type Config = typeof shared_config & (typeof prod_config | typeof dev_config);
@@ -51,6 +56,11 @@ const createConfig = (): Config => {
     if (getEnv("NODE_ENV", "production") === "production") {
         return prod_config;
     }
+
+    if (getEnv("NODE_ENV", "staging") === "staging") {
+        return prod_config;
+    }
+
 
     console.warn("Unexpected NODE_ENV. Using shared configuration.");
     return shared_config as Config;

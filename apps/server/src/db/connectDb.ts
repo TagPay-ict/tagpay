@@ -1,9 +1,10 @@
 // Make sure to install the 'pg' package
 import { drizzle, } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
-import config from "../config/app.config";
+import pg from "pg";
 import * as schema from "./schema"
+import config from "config/app.config";
 
+const {Pool} = pg
 
 const pool = new Pool({
     connectionString: config.DATABASE_URL as string,
