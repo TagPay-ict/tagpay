@@ -49,12 +49,11 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
     try {
 
-        const response = await verificationService.verifyUserBvn("22263221567")
 
         res.status(200).json({
             success: true,
-            message: 'Welcome Backend!',
-            data: response?.data.entity
+            message: 'Welcome Tagpay!',
+    
         });
 
     } catch (error) {
@@ -68,6 +67,21 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
 
 })
+
+app.get("/api/v1/health", async (req: express.Request, res: express.Response) => {
+
+    try {
+        
+        res.status(200).json({
+            success: true,
+            message: 'Health check passed !',
+        })
+
+    } catch (error) {
+        
+    }
+
+});
 
 
 

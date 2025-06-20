@@ -21,7 +21,6 @@ export default class AuthControllers {
     public  registerUser = asyncHandler(async(req:Request, res:Response) => {
 
 
-        console.log("hoooooooooooooola")
 
         const {phoneNumber} = registrationValidationSchema.parse({...req.body})
 
