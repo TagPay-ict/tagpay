@@ -17,9 +17,11 @@ import { setupBullBoard } from "./queue/board";
 import { RootModule } from "services";
 import db from "db/connectDb";
 import { initializeWorkers } from "queue";
+import { AuthModules } from "services/auth/auth.modules";
 
 
 const root = new RootModule(db)
+const auth = new AuthModules(db)
 
 initializeWorkers(root)
 
@@ -71,7 +73,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 
-app.use(`/${config.BASE_PATH}`, root.routes());
+app.use(`/${config.BASE_PATH}/auth`, auth.routes.routes());
 
 
 // app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
