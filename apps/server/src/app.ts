@@ -28,8 +28,10 @@ const app: Express = express()
 
 const server = http.createServer(app)
 
-console.log(config.REDIS_URL, "this  is the redis url")
-console.log(config.NODE_ENV, "this  is the node env url")
+console.log('BASE_PATH:', config.BASE_PATH);
+console.log('Registered root routes:', root.routes().stack?.map(r => r.route?.path));
+
+
 redis.on("error", (error: Error) => {
     systemLogger.error(`Redis error: ${error.message}`, error);
     throw new InternalServerException(
@@ -51,7 +53,7 @@ app.use('/', (req, res, next) => {
 
     res.status(200).json({
         status: "success",
-        
+
     })
 
 });
