@@ -3,7 +3,7 @@ import { getEnv } from "../utils/getEnv";
 
 const shared_config = {
     NODE_ENV: getEnv("NODE_ENV"),
-    BASE_PATH: getEnv("BASE_PATH", "/api/v1"),
+    BASE_PATH: getEnv("BASE_PATH"),
     REFRESH_TOKEN_SECRET: getEnv("JWT_REFRESH_TOKEN_SECRET"),
     ACCESS_TOKEN_SECRET: getEnv("JWT_ACCESS_TOKEN_SECRET"),
     SENDER_EMAIL: getEnv("SENDER_EMAIL"),
