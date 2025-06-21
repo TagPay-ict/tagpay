@@ -30,7 +30,7 @@ export class RootModule {
         this.initializeRoutes();
     }
 
-    private initializeRoutes() {
+    public initializeRoutes() {
         this.router.use("/webhooks", this.webhook.routes.routes());
         this.router.use("/auth",  this.auth.routes.routes());
         this.router.use("/wallet", authMiddleware,  this.wallet.routes.routes());

@@ -17,11 +17,9 @@ import { setupBullBoard } from "./queue/board";
 import { RootModule } from "services";
 import db from "db/connectDb";
 import { initializeWorkers } from "queue";
-import { AuthModules } from "services/auth/auth.modules";
 
 
 const root = new RootModule(db)
-const auth = new AuthModules(db)
 
 initializeWorkers(root)
 
@@ -73,60 +71,60 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 
-app.use(`/${config.BASE_PATH}/auth`, auth.routes.routes());
+app.use(`/${config.BASE_PATH}`, root.routes());
 
 
-// app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
-// app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
-// app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
+app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
+app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
+app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
 
 
-// app.get("/api/v1", async (req: express.Request, res: express.Response) => {
+app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
-//     try {
-
-
-//         res.status(200).json({
-//             success: true,
-//             message: 'Welcome Tagpay!',
-
-//         });
-
-//     } catch (error) {
-//         console.log(error, "is this the error being printed")
-//         res.status(500).json({
-//             success: false,
-//             message: 'We failed you!',
-//         });
-//     }
+    try {
 
 
+        res.status(200).json({
+            success: true,
+            message: 'Welcome Tagpay!',
 
-// })
+        });
 
-// app.use('/', (req, res, next) => {
+    } catch (error) {
+        console.log(error, "is this the error being printed")
+        res.status(500).json({
+            success: false,
+            message: 'We failed you!',
+        });
+    }
 
-//     res.status(200).json({
-//         status: "success",
 
-//     })
 
-// });
+})
 
-// app.get("/api/v1/health", async (req: express.Request, res: express.Response) => {
+app.use('/', (req, res, next) => {
 
-//     try {
+    res.status(200).json({
+        status: "success",
 
-//         res.status(200).json({
-//             success: true,
-//             message: 'Health check passed !',
-//         })
+    })
 
-//     } catch (error) {
+});
 
-//     }
+app.get("/api/v1/health", async (req: express.Request, res: express.Response) => {
 
-// });
+    try {
+
+        res.status(200).json({
+            success: true,
+            message: 'Health check passed !',
+        })
+
+    } catch (error) {
+
+    }
+
+});
 
 
 
