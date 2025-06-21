@@ -14,7 +14,6 @@ import { systemLogger } from "utils/logger";
 import { ErrorCode } from "enum/errorCode.enum";
 import { InternalServerException } from "utils/error";
 import { setupBullBoard } from "./queue/board";
-
 import { RootModule } from "services";
 import db from "db/connectDb";
 import { initializeWorkers } from "queue";
@@ -45,6 +44,22 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+
+app.use(`/${config.BASE_PATH}`, root.routes());
+
+app.use('/', (req, res, next) => {
+
+    res.status(200).json({
+        status: "success",
+        
+    })
+
+});
+app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
+app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
+app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
+
+
 app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
     try {
@@ -53,7 +68,7 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
         res.status(200).json({
             success: true,
             message: 'Welcome Tagpay!',
-    
+
         });
 
     } catch (error) {
@@ -71,24 +86,18 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 app.get("/api/v1/health", async (req: express.Request, res: express.Response) => {
 
     try {
-        
+
         res.status(200).json({
             success: true,
             message: 'Health check passed !',
         })
 
     } catch (error) {
-        
+
     }
 
 });
 
-
-
-app.use(`/${config.BASE_PATH}`, root.routes());
-app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
-app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
-app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
 
 
 app.use(errorHandler)
