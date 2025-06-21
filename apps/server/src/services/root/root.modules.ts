@@ -31,6 +31,7 @@ export class RootModule {
     }
 
     public initializeRoutes() {
+        console.log("checking if my routes are initialized");
         this.router.use("/webhooks", this.webhook.routes.routes());
         this.router.use("/auth",  this.auth.routes.routes());
         this.router.use("/wallet", authMiddleware,  this.wallet.routes.routes());
