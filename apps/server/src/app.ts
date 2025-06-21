@@ -29,7 +29,31 @@ const app: Express = express()
 const server = http.createServer(app)
 
 console.log('BASE_PATH:', config.BASE_PATH);
-console.log('Registered root routes:', root.routes().stack?.map(r => r.route?.path));
+
+
+
+function listRoutes(router: express.Router, parentPath = ""): string[] {
+    const routes: string[] = [];
+    router.stack.forEach((layer: any) => {
+        if (layer.route && layer.route.path) {
+            routes.push(parentPath + layer.route.path);
+        } else if (layer.name === "router" && layer.handle.stack) {
+            const nestedPath = layer.regexp?.source
+                .replace("^\\", "")
+                .replace("\\/?(?=\\/|$)", "")
+                .replace(/\\\//g, "/")
+                .replace(/\$$/, "");
+            routes.push(
+                ...listRoutes(layer.handle, parentPath + (nestedPath || ""))
+            );
+        }
+    });
+    return routes;
+}
+
+
+console.log('All registered root routes:', listRoutes(root.routes()));
+
 
 
 redis.on("error", (error: Error) => {
