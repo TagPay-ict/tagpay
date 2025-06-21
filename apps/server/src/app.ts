@@ -102,7 +102,7 @@ app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
 })
 
-app.use('/', (req, res, next) => {
+app.get('/', (req, res, next) => {
 
     res.status(200).json({
         status: "success",
