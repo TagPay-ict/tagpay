@@ -73,56 +73,58 @@ app.use(cookieParser());
 
 app.use(`/${config.BASE_PATH}`, root.routes());
 
-app.use('/', (req, res, next) => {
 
-    res.status(200).json({
-        status: "success",
-
-    })
-
-});
-app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
-app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
-app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
+// app.use(`/${config.BASE_PATH}/user`, authMiddleware, userRouter)
+// app.use(`/${config.BASE_PATH}/setup`, authMiddleware, onboardingRouter)
+// app.use(`/${config.BASE_PATH}/bills`, authMiddleware, billsRouter)
 
 
-app.get("/api/v1", async (req: express.Request, res: express.Response) => {
+// app.get("/api/v1", async (req: express.Request, res: express.Response) => {
 
-    try {
+//     try {
 
 
-        res.status(200).json({
-            success: true,
-            message: 'Welcome Tagpay!',
+//         res.status(200).json({
+//             success: true,
+//             message: 'Welcome Tagpay!',
 
-        });
+//         });
 
-    } catch (error) {
-        console.log(error, "is this the error being printed")
-        res.status(500).json({
-            success: false,
-            message: 'We failed you!',
-        });
-    }
+//     } catch (error) {
+//         console.log(error, "is this the error being printed")
+//         res.status(500).json({
+//             success: false,
+//             message: 'We failed you!',
+//         });
+//     }
 
 
 
-})
+// })
 
-app.get("/api/v1/health", async (req: express.Request, res: express.Response) => {
+// app.use('/', (req, res, next) => {
 
-    try {
+//     res.status(200).json({
+//         status: "success",
 
-        res.status(200).json({
-            success: true,
-            message: 'Health check passed !',
-        })
+//     })
 
-    } catch (error) {
+// });
 
-    }
+// app.get("/api/v1/health", async (req: express.Request, res: express.Response) => {
 
-});
+//     try {
+
+//         res.status(200).json({
+//             success: true,
+//             message: 'Health check passed !',
+//         })
+
+//     } catch (error) {
+
+//     }
+
+// });
 
 
 
