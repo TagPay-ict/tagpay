@@ -30,6 +30,9 @@ const server = http.createServer(app)
 
 console.log('BASE_PATH:', config.BASE_PATH);
 
+console.log('BASE_PATH raw value:', JSON.stringify(config.BASE_PATH));
+
+
 
 
 function listRoutes(router: express.Router, parentPath = ""): string[] {
