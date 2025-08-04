@@ -1,5 +1,5 @@
 import { asyncHandler } from "middlewares/asyncHandler";
-import {Request, Response} from "express"
+import { Request, Response } from "express"
 import { EventType, passcodeVerificationValidation, phoneNumberVerificationValidation, refreshTokenSchema, registrationValidationSchema } from "./auth.types";
 import authServices from "./auth.services";
 import { HTTPSTATUS } from "config/statusCode.config";
@@ -10,22 +10,22 @@ import AuthServices from "./auth.services";
 export default class AuthControllers {
 
 
-      private readonly services: AuthServices
-    
-        constructor( services: AuthServices){
-            this.services = services
-        }
+    private readonly services: AuthServices
+
+    constructor(services: AuthServices) {
+        this.services = services
+    }
 
 
 
-    public  registerUser = asyncHandler(async(req:Request, res:Response) => {
+    public registerUser = asyncHandler(async (req: Request, res: Response) => {
 
 
 
-        const {phoneNumber} = registrationValidationSchema.parse({...req.body})
+        const { phoneNumber } = registrationValidationSchema.parse({ ...req.body })
 
 
-        await this.services.registerUser({phoneNumber})
+        await this.services.registerUser({ phoneNumber })
 
         res.status(200).json({
             success: true,
@@ -35,15 +35,14 @@ export default class AuthControllers {
 
     })
 
-    public  loginUser = asyncHandler(async(req:Request, res:Response) => {
+    public loginUser = asyncHandler(async (req: Request, res: Response) => {
 
 
-        console.log("hoooooooooooooola")
 
-        const {phoneNumber} = registrationValidationSchema.parse({...req.body})
+        const { phoneNumber } = registrationValidationSchema.parse({ ...req.body })
 
 
-        await this.services.loginUser({phoneNumber})
+        await this.services.loginUser({ phoneNumber })
 
         res.status(HTTPSTATUS.CREATED).json({
             success: true,
@@ -56,7 +55,7 @@ export default class AuthControllers {
 
     public verifyPhoneNumberOtp = asyncHandler(async (req: Request, res: Response) => {
 
-        const event  = req.query.event as EventType
+        const event = req.query.event as EventType
 
         const { otp, phoneNumber } = phoneNumberVerificationValidation.parse({ ...req.body })
 
@@ -120,7 +119,7 @@ export default class AuthControllers {
 
     public refreshToken = asyncHandler(async (req: Request, res: Response) => {
 
-        const { refreshToken: token } = refreshTokenSchema.parse({ ...req.body }) 
+        const { refreshToken: token } = refreshTokenSchema.parse({ ...req.body })
 
         const refreshTokenHeader = req.headers['x-refresh-token'];
 
@@ -128,15 +127,13 @@ export default class AuthControllers {
         console.log(token, "this is the refresh token from the body")
 
 
-        const {accessToken, refreshToken} = await this.services.refreshToken(token);
-
-        console.log("we are fteching the motherfucking refresh token")
+        const { accessToken, refreshToken } = await this.services.refreshToken(token);
 
 
         return res.status(HTTPSTATUS.OK).json({
             success: true,
             message: "Retrived the access token succesfully",
-            data : {
+            data: {
                 accessToken,
                 refreshToken
             }
@@ -147,17 +144,13 @@ export default class AuthControllers {
 
         const refreshToken = req.headers['x-refresh-token'];
 
-
-         await this.services.logout(refreshToken as string);
-
-        console.log("we are fucking signing out token")
-
+        await this.services.logout(refreshToken as string);
 
         return res.status(HTTPSTATUS.OK).json({
             success: true,
             message: "Logout succesful",
-          
         });
+
     });
 
 
@@ -165,30 +158,23 @@ export default class AuthControllers {
 
         const { phoneNumber } = registrationValidationSchema.parse({ ...req.body })
 
-
-         await this.services.resendToken(phoneNumber as string);
-
-
+        await this.services.resendToken(phoneNumber as string);
 
         return res.status(HTTPSTATUS.OK).json({
             success: true,
             message: "Token resent succesfully",
-          
+
         });
     });
-    
+
 
     public createPasscode = asyncHandler(async (req: Request, res: Response) => {
 
         console.log(req.body, "this is the body form the req")
 
-
-        const { passcode ,userId} = passcodeVerificationValidation.parse({ ...req.body })
-
-
+        const { passcode, userId } = passcodeVerificationValidation.parse({ ...req.body })
 
         await this.services.createPasscode(userId, passcode)
-
 
         return res.status(HTTPSTATUS.OK).json({
             success: true,

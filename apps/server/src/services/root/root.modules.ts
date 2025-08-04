@@ -8,6 +8,7 @@ import { WalletModules } from "services/wallet/wallet.modules";
 import { authMiddleware } from "middlewares/auth.middleware";
 import { TransactionModules } from "services/transactions/transaction.nodules";
 import { TransferModules } from "services/transfer/transfer.modules";
+import { MigrationModules } from "services/migration/migration.modules";
 
 export class RootModule {
     private readonly router: express.Router;
@@ -16,6 +17,7 @@ export class RootModule {
     public readonly wallet: WalletModules;
     public readonly transactions: TransactionModules;
     public readonly transfer: TransferModules;
+    public readonly migration: MigrationModules;
 
 
     constructor(db: NodePgDatabase<typeof schema> & { $client: Pool }) {
@@ -25,18 +27,19 @@ export class RootModule {
         this.auth = new AuthModules(db)
         this.wallet = new WalletModules(db)
         this.transactions = new TransactionModules(db)
+        this.migration = new MigrationModules(db)
         this.transfer = new TransferModules(db, this.transactions.services)
 
         this.initializeRoutes();
     }
 
     public initializeRoutes() {
-        console.log("checking if my routes are initialized");
         this.router.use("/webhooks", this.webhook.routes.routes());
         this.router.use("/auth",  this.auth.routes.routes());
         this.router.use("/wallet", authMiddleware,  this.wallet.routes.routes());
         this.router.use("/transaction", authMiddleware,  this.transactions.routes.routes());
         this.router.use("/transfer", authMiddleware,  this.transfer.routes.routes());
+        this.router.use("/migration",  this.migration.routes.routes());
     }
 
     routes() {

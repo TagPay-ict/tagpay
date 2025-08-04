@@ -26,7 +26,7 @@ export enum AudienceType {
 
 
 export const AccessTokenSignOptions: SignOptions = {
-    expiresIn: 4 * 60 * 60, // 2 minutes in seconds
+    expiresIn: 4 * 60 * 60, 
 };
 
 export const RefreshTokenSignOptions: SignOptions = {

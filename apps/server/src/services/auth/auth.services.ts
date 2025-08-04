@@ -3,7 +3,6 @@ import { BadRequestException } from "../../utils/error";
 import { user } from "../../db/schema/user.model";
 import { eq, exists } from "drizzle-orm"
 import { ErrorCode } from "../../enum/errorCode.enum";
-import { generateRef } from "../../utils/generateRef";
 import cache from "../../config/node-cache";
 import { systemLogger } from "../../utils/logger";
 import { AccessTokenSignOptions, AudienceType, jwtUtility, RefreshTokenSignOptions, TokenPayload } from "../../utils/jwt";
@@ -14,6 +13,8 @@ import { sendOtp } from "utils/sendOtp";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schemas from "../../db/schema"
 import { Pool } from "pg";
+import randomstring from "randomstring"
+
 
 
 type UserType = typeof user.$inferSelect
@@ -98,7 +99,10 @@ export default class AuthServices {
     public async createUser(phoneNumber: string): Promise<{ accessToken: string, refreshToken: string }> {
         return await this.db.transaction(async (tx) => {
 
-            const [newUser] = await tx.insert(user).values({ phone_number: phoneNumber }).returning({
+           const referral_code = randomstring.generate(5)
+                          const account_ref = randomstring.generate(7)
+
+            const [newUser] = await tx.insert(user).values({ phone_number: phoneNumber, referral_code }).returning({
                 id: user.id,
             });
 
@@ -312,10 +316,12 @@ export default class AuthServices {
             });
 
             systemLogger.info(`Refresh token successfully used for user ${decodedToken.user_id}`);
+
             return {
                 accessToken: newAccessToken,
                 refreshToken: newRefreshToken,
             };
+            
         } catch (error) {
             systemLogger.error(`Error during refresh token process: ${error}`);
             throw new BadRequestException("Failed to refresh token", ErrorCode.AUTH_INVALID_TOKEN);

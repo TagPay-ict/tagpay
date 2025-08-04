@@ -36,19 +36,12 @@ export const authMiddleware = asyncHandler(async (req: Request, res: Response, n
         }
 
         const decoded = jwtUtility.decodeToken(token)
-
-        
-
-        console.log(decoded, "this is the verified")
-
+   
         const verified = jwtUtility.verifyAccessToken(token, {
             audience: AudienceType.MobileApp,
             subject: decoded?.sub  as string,
 
         }) 
-
-        console.log(verified, "this is the verified")
-
 
         const session = await sessionServices.getSessionById(String(verified.session_id));
 

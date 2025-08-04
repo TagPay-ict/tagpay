@@ -18,6 +18,9 @@ export const setup = pgTable("setup", {
     is_address_provided: boolean().default(false),
     is_identity_verified: boolean().default(false),
     is_bvn_provided: boolean().default(false),
+    is_nin_provided: boolean().default(false),
+    is_bvn_verified: boolean().default(false),
+    is_nin_verified: boolean().default(false),
     has_created_transactionPin: boolean().default(false),
     is_account_created: boolean().default(false),
 })

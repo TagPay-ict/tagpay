@@ -70,11 +70,11 @@ export default class WalletServices {
                 alias: "Main Account",
                 status: "active",
                 user_id: userId,
-                provider_wallet_id: walletDetails?.walletId,
+                provider_wallet_id: walletDetails?.id,
                 meta_data: {
                     mode: walletDetails?.mode,
                     wallet_ref: walletDetails.accountReference,
-                    merchant_wallet_id: walletDetails.id
+                    merchant_wallet_id: walletDetails.walletId
                 },
                 balance: 0,
                 available_balance: 0,

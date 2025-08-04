@@ -11,6 +11,9 @@ export const sendOtp = async (phoneNumber: string) => {
     const token = generateRef(undefined, 6, true);
     const message = `Your TagPay OTP is ${token} . Expires in 5 minutes. `;
 
+    console.log(token, "this is the token generated and sent to the frontend")
+
+
     cache.set(phoneNumber, token, 5 * 60)
 
     try {
@@ -29,6 +32,7 @@ export const sendOtp = async (phoneNumber: string) => {
             systemLogger.info(`OTP sent to ${phoneNumber} : token is ${token}`);
         
     } catch (error) {
-        
+        console.log(error)
+        throw error
     }
 }

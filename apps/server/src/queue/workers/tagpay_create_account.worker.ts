@@ -60,6 +60,9 @@ const TagPay_CreateAccountWorker = (root:RootModule) => {
         }
     )
 
+
+
+    
     worker.on("completed", async (job: Job) => {
         console.log(`Job ${job.id} completed!`);
 
