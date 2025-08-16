@@ -1,4 +1,6 @@
-# Use Node.js 18 Alpine as base image
+# Development Dockerfile for TagPay Admin
+# Optimized for hot reload and fast development with Turbo prune
+
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed
@@ -34,5 +36,9 @@ WORKDIR /app/apps/admin
 # Expose port
 EXPOSE 5173
 
-# Start development server
-CMD ["npm", "run", "dev"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5173 || exit 1
+
+# Start with Vite dev server for hot reload
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

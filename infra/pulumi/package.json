@@ -8,6 +8,20 @@
     "dependencies": {
         "@pulumi/aws": "^7.0.0",
         "@pulumi/awsx": "^3.0.0",
+        "@pulumi/eks": "^4.0.1",
+        "@pulumi/kubernetes": "^4.23.0",
         "@pulumi/pulumi": "^3.113.0"
+    },
+    "scripts": {
+        "deploy:staging": "./scripts/deploy.sh staging up",
+        "deploy:production": "./scripts/deploy.sh production up",
+        "preview:staging": "./scripts/deploy.sh staging preview",
+        "preview:production": "./scripts/deploy.sh production preview",
+        "destroy:staging": "./scripts/deploy.sh staging destroy",
+        "destroy:production": "./scripts/deploy.sh production destroy",
+        "refresh:staging": "./scripts/deploy.sh staging refresh",
+        "refresh:production": "./scripts/deploy.sh production refresh",
+        "config:staging": "pulumi config --stack staging",
+        "config:production": "pulumi config --stack production"
     }
 }

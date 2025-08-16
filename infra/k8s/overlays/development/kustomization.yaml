@@ -24,6 +24,10 @@ patches:
     target:
       kind: Deployment
       name: admin
+  - path: admin-patch.yaml
+    target:
+      kind: Service
+      name: admin-service
   - path: nginx-patch.yaml
     target:
       kind: Deployment

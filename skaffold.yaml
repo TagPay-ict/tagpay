@@ -1,0 +1,239 @@
+apiVersion: skaffold/v4beta7
+kind: Config
+metadata:
+  name: tagpay
+  annotations:
+    description: "TagPay Financial Services Platform - Skaffold Configuration"
+
+# Build configuration
+build:
+  # Use local Docker daemon for development
+  local:
+    useDockerCLI: true
+    useBuildkit: true
+
+  # Define all artifacts to build
+  artifacts:
+    # Server API
+    - image: tagpay-server
+      docker:
+        dockerfile: apps/server/Dockerfile
+        buildArgs:
+          NODE_ENV: development
+        target: development
+      sync:
+        manual:
+          - src: "apps/server/src/**/*.ts"
+            dest: .
+          - src: "apps/server/package.json"
+            dest: .
+          - src: "apps/server/tsconfig.json"
+            dest: .
+
+    # Admin Dashboard
+    - image: tagpay-admin
+      docker:
+        dockerfile: apps/admin/Dockerfile
+        buildArgs:
+          NODE_ENV: development
+        target: development
+      sync:
+        manual:
+          - src: "apps/admin/src/**/*.{ts,tsx,js,jsx}"
+            dest: .
+          - src: "apps/admin/package.json"
+            dest: .
+          - src: "apps/admin/vite.config.ts"
+            dest: .
+
+    # Nginx Reverse Proxy
+    - image: tagpay-nginx
+      docker:
+        dockerfile: infra/nginx/Dockerfile
+        buildArgs:
+          NGINX_ENV: development
+        target: development
+      sync:
+        manual:
+          - src: "infra/nginx/default.dev.conf"
+            dest: /etc/nginx/conf.d/default.conf
+          - src: "infra/nginx/nginx.conf"
+            dest: /etc/nginx/nginx.conf
+
+  # Tag policy
+  tagPolicy:
+    gitCommit:
+      variant: AbbrevCommit
+
+# Deploy configuration
+deploy:
+  # Use Kustomize for deployment
+  kustomize:
+    path: infra/k8s/overlays/development
+    flags:
+      global:
+        - --enable-helm
+
+# Port forwarding for local development
+portForward:
+  - resourceType: service
+    resourceName: server-service
+    port: 3000
+    localPort: 3000
+  - resourceType: service
+    resourceName: admin-service
+    port: 5173
+    localPort: 8080
+  - resourceType: service
+    resourceName: nginx-service
+    port: 80
+    localPort: 8081
+
+# Test configuration
+test:
+  - image: tagpay-server
+    structureTests:
+      - ./tests/structure-tests/*.yaml
+  - image: tagpay-admin
+    structureTests:
+      - ./tests/structure-tests/*.yaml
+
+# Profiles for different environments
+profiles:
+  # Development profile (default)
+  - name: development
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: development
+      - op: replace
+        path: /build/artifacts/1/docker/target
+        value: development
+      - op: replace
+        path: /build/artifacts/2/docker/target
+        value: development
+      - op: replace
+        path: /build/artifacts/0/docker/buildArgs/NODE_ENV
+        value: development
+      - op: replace
+        path: /build/artifacts/1/docker/buildArgs/NODE_ENV
+        value: development
+      - op: replace
+        path: /build/artifacts/2/docker/buildArgs/NGINX_ENV
+        value: development
+      - op: replace
+        path: /deploy/kustomize/path
+        value: infra/k8s/overlays/development
+
+  # Staging profile
+  - name: staging
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: staging
+      - op: replace
+        path: /build/artifacts/1/docker/target
+        value: staging
+      - op: replace
+        path: /build/artifacts/2/docker/target
+        value: staging
+      - op: replace
+        path: /build/artifacts/0/docker/buildArgs/NODE_ENV
+        value: staging
+      - op: replace
+        path: /build/artifacts/1/docker/buildArgs/NODE_ENV
+        value: staging
+      - op: replace
+        path: /build/artifacts/2/docker/buildArgs/NGINX_ENV
+        value: staging
+      - op: replace
+        path: /deploy/kustomize/path
+        value: infra/k8s/overlays/staging
+      - op: replace
+        path: /build/tagPolicy
+        value:
+          sha256: {}
+
+  # Production profile
+  - name: production
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/target
+        value: production
+      - op: replace
+        path: /build/artifacts/1/docker/target
+        value: production
+      - op: replace
+        path: /build/artifacts/2/docker/target
+        value: production
+      - op: replace
+        path: /build/artifacts/0/docker/buildArgs/NODE_ENV
+        value: production
+      - op: replace
+        path: /build/artifacts/1/docker/buildArgs/NODE_ENV
+        value: production
+      - op: replace
+        path: /build/artifacts/2/docker/buildArgs/NGINX_ENV
+        value: production
+      - op: replace
+        path: /deploy/kustomize/path
+        value: infra/k8s/overlays/production
+      - op: replace
+        path: /build/tagPolicy
+        value:
+          sha256: {}
+      - op: remove
+        path: /portForward
+
+  # Local development with hot reload and Turbo prune
+  - name: local-dev
+    patches:
+      - op: replace
+        path: /build/artifacts/0/docker/dockerfile
+        value: apps/server/Dockerfile.dev
+      - op: replace
+        path: /build/artifacts/1/docker/dockerfile
+        value: apps/admin/Dockerfile.dev
+      - op: replace
+        path: /build/artifacts/2/docker/dockerfile
+        value: infra/nginx/Dockerfile.dev
+      - op: replace
+        path: /build/artifacts/0/docker/buildArgs
+        value:
+          NODE_ENV: development
+          TURBO_TEAM: ""
+          TURBO_TOKEN: ""
+      - op: replace
+        path: /build/artifacts/1/docker/buildArgs
+        value:
+          NODE_ENV: development
+          TURBO_TEAM: ""
+          TURBO_TOKEN: ""
+      - op: add
+        path: /build/artifacts/0/sync
+        value:
+          manual:
+            - src: "apps/server/src/**/*.ts"
+              dest: .
+            - src: "apps/server/package.json"
+              dest: .
+            - src: "apps/server/tsconfig.json"
+              dest: .
+      - op: add
+        path: /build/artifacts/1/sync
+        value:
+          manual:
+            - src: "apps/admin/src/**/*.{ts,tsx,js,jsx}"
+              dest: .
+            - src: "apps/admin/package.json"
+              dest: .
+            - src: "apps/admin/vite.config.ts"
+              dest: .
+      - op: add
+        path: /build/artifacts/2/sync
+        value:
+          manual:
+            - src: "infra/nginx/default.dev.conf"
+              dest: /etc/nginx/conf.d/default.conf
+            - src: "infra/nginx/nginx.conf"
+              dest: /etc/nginx/nginx.conf

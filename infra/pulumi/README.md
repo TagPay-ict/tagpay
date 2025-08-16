@@ -1,61 +1,108 @@
- # AWS TypeScript Pulumi Template
+# TagPay Infrastructure as Code
 
- A minimal Pulumi template for provisioning AWS infrastructure using TypeScript. This template creates an Amazon S3 bucket and exports its name.
+This directory contains the Pulumi infrastructure code for TagPay, provisioning AWS resources for staging and production environments.
 
- ## Prerequisites
+## 🏗️ Infrastructure Components
 
- - Pulumi CLI (>= v3): https://www.pulumi.com/docs/get-started/install/
- - Node.js (>= 14): https://nodejs.org/
- - AWS credentials configured (e.g., via `aws configure` or environment variables)
+### Core Services
+- **EKS Cluster** - Kubernetes orchestration
+- **VPC & Networking** - Network isolation and security
+- **RDS PostgreSQL** - Production database
+- **ElastiCache Redis** - Caching and session storage
+- **Application Load Balancer** - Traffic distribution
+- **Route 53** - DNS management
+- **Secrets Manager** - Secure secret storage
+- **CloudWatch** - Monitoring and logging
+- **S3** - Static file storage
+- **IAM** - Service accounts and permissions
 
- ## Getting Started
+## 🚀 Quick Start
 
- 1. Initialize a new Pulumi project:
+### Prerequisites
+- Pulumi CLI installed
+- AWS credentials configured
+- Node.js 18+
 
-    ```bash
-    pulumi new aws-typescript
-    ```
+### Installation
+```bash
+cd infra/pulumi
+npm install
+```
 
-    Follow the prompts to set your:
-    - Project name
-    - Project description
-    - AWS region (defaults to `us-east-1`)
+### Deploy to Staging
+```bash
+npm run deploy:staging
+```
 
- 2. Preview and deploy your infrastructure:
+### Deploy to Production
+```bash
+npm run deploy:production
+```
 
-    ```bash
-    pulumi preview
-    pulumi up
-    ```
+### Preview Changes
+```bash
+npm run preview:staging
+npm run preview:production
+```
 
- 3. When you're finished, tear down your stack:
+## 📊 Resource Sizing
 
-    ```bash
-    pulumi destroy
-    pulumi stack rm
-    ```
+### Staging Environment
+- EKS: 2-3 t3.medium nodes
+- RDS: db.t3.micro (20GB)
+- Redis: cache.t3.micro
+- ALB: Application Load Balancer
 
- ## Project Layout
+### Production Environment
+- EKS: 2-5 t3.large nodes
+- RDS: db.t3.large (100GB)
+- Redis: cache.t3.micro (can be upgraded)
+- ALB: Application Load Balancer with deletion protection
 
- - `Pulumi.yaml` — Pulumi project and template metadata
- - `index.ts` — Main Pulumi program (creates an S3 bucket)
- - `package.json` — Node.js dependencies
- - `tsconfig.json` — TypeScript compiler options
+## 🔒 Security Features
 
- ## Configuration
+- VPC with private subnets for databases
+- Security groups with minimal required access
+- Secrets Manager for sensitive data
+- IAM roles with least privilege
+- Encryption at rest and in transit
 
- | Key           | Description                             | Default     |
- | ------------- | --------------------------------------- | ----------- |
- | `aws:region`  | The AWS region to deploy resources into | `us-east-1` |
+## 📈 Monitoring
 
- Use `pulumi config set <key> <value>` to customize configuration.
+- CloudWatch logs for application logs
+- CloudWatch metrics for resource monitoring
+- RDS and ElastiCache monitoring
+- EKS cluster monitoring
 
- ## Next Steps
+## 🧹 Cleanup
 
- - Extend `index.ts` to provision additional resources (e.g., VPCs, Lambda functions, DynamoDB tables).
- - Explore [Pulumi AWSX](https://www.pulumi.com/docs/reference/pkg/awsx/) for higher-level AWS components.
- - Consult the [Pulumi documentation](https://www.pulumi.com/docs/) for more examples and best practices.
+### Destroy Staging
+```bash
+npm run destroy:staging
+```
 
- ## Getting Help
+### Destroy Production
+```bash
+npm run destroy:production
+```
 
- If you encounter any issues or have suggestions, please open an issue in this repository.
+## 🔄 Updates
+
+### Update Infrastructure
+```bash
+pulumi up --stack staging
+pulumi up --stack production
+```
+
+### Refresh State
+```bash
+npm run refresh:staging
+npm run refresh:production
+```
+
+## 📞 Support
+
+For infrastructure issues:
+1. Check Pulumi documentation
+2. Review AWS service limits
+3. Contact the DevOps team
