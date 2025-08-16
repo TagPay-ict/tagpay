@@ -1,0 +1,38 @@
+# Use Node.js 18 Alpine as base image
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install turbo globally
+RUN npm install -g turbo
+
+# Copy the entire monorepo
+COPY . .
+
+# Prune the workspace to only include server dependencies
+RUN turbo prune server --docker
+
+# Install dependencies based on the preferred package manager
+FROM base AS installer
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# First install dependencies (as they change less often)
+COPY --from=deps /app/out/json/ .
+COPY --from=deps /app/out/package-lock.json* ./
+RUN npm ci
+
+# Build the project and its dependencies
+COPY --from=deps /app/out/full/ .
+
+# Set working directory to the server app
+WORKDIR /app/apps/server
+
+# Expose port
+EXPOSE 3000
+
+# Start development server
+CMD ["npm", "run", "dev"]
