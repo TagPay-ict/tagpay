@@ -42,3 +42,11 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Kubernetes Infrastructure
+# See infra/k8s/.gitignore for detailed k8s-specific patterns
+# Critical security patterns (never commit these):
+infra/k8s/**/secret*.yaml
+infra/k8s/**/configmap-patch.yaml
+infra/k8s/overlays/production/
+infra/k8s/overlays/staging/

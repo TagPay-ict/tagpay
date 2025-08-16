@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tagpay-dev
+  labels:
+    name: tagpay-dev
+    environment: development

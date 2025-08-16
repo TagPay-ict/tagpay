@@ -1,0 +1,50 @@
+# Kubernetes Secrets and Sensitive Files
+# Never commit actual secret files
+**/secret.yaml
+**/secret-patch.yaml
+**/secrets/
+**/secret-template.yaml
+
+# Environment-specific configs with real values
+**/configmap-patch.yaml
+**/production/
+**/staging/
+
+# Generated files
+**/generated/
+**/*.generated.yaml
+**/*.env
+**/*.env.*
+
+# Local development files
+**/local/
+**/dev-secrets/
+**/staging-secrets/
+
+# Backup files
+**/*.backup
+**/*.bak
+**/*.tmp
+
+# IDE files
+**/.vscode/
+**/.idea/
+**/*.swp
+**/*.swo
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+
+# Log files
+**/*.log
+**/logs/
+
+# Keep templates and base configs
+!**/configmap-template.yaml
+!**/secret-template.yaml
+!**/base/
+!**/overlays/development/
+!**/templates/
+!**/scripts/
+!**/README.md

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: tagpay
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: tagpay
+      component: admin
+  template:
+    metadata:
+      labels:
+        app: tagpay
+        component: admin
+    spec:
+      containers:
+        - name: admin
+          image: tagpay-admin:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: tagpay-config
+                  key: NODE_ENV
+            - name: VITE_API_URL
+              value: "http://server-service:3000"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin-service
+  namespace: tagpay
+spec:
+  selector:
+    app: tagpay
+    component: admin
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+  type: ClusterIP

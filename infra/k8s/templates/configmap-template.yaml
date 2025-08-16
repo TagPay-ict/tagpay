@@ -1,0 +1,65 @@
+# ConfigMap Template - Replace placeholders with actual values
+# DO NOT commit this file with real values!
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tagpay-config
+  namespace: ${NAMESPACE}
+data:
+  # Database configuration
+  # Replace ${DATABASE_HOST} with actual database host
+  DATABASE_HOST: ${DATABASE_HOST}
+  # Replace ${DATABASE_PORT} with actual database port
+  DATABASE_PORT: ${DATABASE_PORT}
+  # Replace ${DATABASE_NAME} with actual database name
+  DATABASE_NAME: ${DATABASE_NAME}
+  # Replace ${DATABASE_USER} with actual database user
+  DATABASE_USER: ${DATABASE_USER}
+
+  # Redis configuration
+  # Replace ${REDIS_HOST} with actual Redis host
+  REDIS_HOST: ${REDIS_HOST}
+  # Replace ${REDIS_PORT} with actual Redis port
+  REDIS_PORT: ${REDIS_PORT}
+
+  # Application configuration
+  # Replace ${NODE_ENV} with actual environment (development/staging/production)
+  NODE_ENV: ${NODE_ENV}
+  # Replace ${PORT} with actual application port
+  PORT: ${PORT}
+  # Replace ${BASE_PATH} with actual API base path
+  BASE_PATH: ${BASE_PATH}
+
+  # Server configuration
+  # Replace ${SERVER_PORT} with actual server port
+  SERVER_PORT: ${SERVER_PORT}
+  # Replace ${ADMIN_PORT} with actual admin port
+  ADMIN_PORT: ${ADMIN_PORT}
+  # Replace ${NGINX_PORT} with actual nginx port
+  NGINX_PORT: ${NGINX_PORT}
+
+  # Logging configuration
+  # Replace ${LOG_LEVEL} with actual log level (debug/info/warn/error)
+  LOG_LEVEL: ${LOG_LEVEL}
+  # Replace ${LOG_FORMAT} with actual log format (json/text)
+  LOG_FORMAT: ${LOG_FORMAT}
+
+  # Rate limiting
+  # Replace ${RATE_LIMIT_WINDOW} with actual rate limit window in milliseconds
+  RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW}
+  # Replace ${RATE_LIMIT_MAX} with actual rate limit maximum requests
+  RATE_LIMIT_MAX: ${RATE_LIMIT_MAX}
+
+  # Session configuration
+  # Replace ${SESSION_SECRET} with actual session secret
+  SESSION_SECRET: ${SESSION_SECRET}
+  # Replace ${SESSION_MAX_AGE} with actual session max age in milliseconds
+  SESSION_MAX_AGE: ${SESSION_MAX_AGE}
+
+  # CORS configuration
+  # Replace ${CORS_ORIGIN} with actual CORS origin
+  CORS_ORIGIN: ${CORS_ORIGIN}
+  # Replace ${CORS_METHODS} with actual CORS methods
+  CORS_METHODS: ${CORS_METHODS}
+  # Replace ${CORS_CREDENTIALS} with actual CORS credentials setting
+  CORS_CREDENTIALS: ${CORS_CREDENTIALS}
