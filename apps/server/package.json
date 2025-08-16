@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "@tagpay/server",
   "version": "1.0.0",
   "description": "Api for tagpay",
   "private": "true",

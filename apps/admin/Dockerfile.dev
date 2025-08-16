@@ -13,7 +13,7 @@ RUN npm install -g turbo
 COPY . .
 
 # Prune the workspace to only include admin dependencies
-RUN turbo prune admin --docker
+RUN turbo prune @tagpay/admin --docker
 
 # Install dependencies based on the preferred package manager
 FROM base AS installer

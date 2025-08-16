@@ -13,7 +13,7 @@ RUN npm install -g turbo
 COPY . .
 
 # Prune the workspace to only include server dependencies
-RUN turbo prune server --docker
+RUN turbo prune @tagpay/server --docker
 
 # Install dependencies based on the preferred package manager
 FROM base AS installer
