@@ -287,3 +287,32 @@ This project is licensed under the ISC License.
 ---
 
 **Happy Coding! 🚀**
+
+## 🛠️ Makefile Commands
+
+TagPay includes a comprehensive Makefile that provides a unified interface for all development and deployment operations.
+
+### Quick Start
+```bash
+make setup              # Complete project setup
+make dev-full           # Start full development stack
+make help               # View all available commands
+```
+
+### Key Commands
+- **Development**: `make dev-full`, `make build`, `make test`
+- **Docker**: `make docker-up`, `make docker-dev`, `make docker-logs`
+- **Infrastructure**: `make infra-staging`, `make infra-production`
+- **Database**: `make db-migrate`, `make db-studio`
+- **Deployment**: `make deploy-staging`, `make deploy-production`
+
+### Help Categories
+```bash
+make help-docker        # Docker commands
+make help-infra         # Infrastructure commands
+make help-k8s           # Kubernetes commands
+make help-dev           # Development commands
+```
+
+For complete documentation, see [MAKEFILE.md](MAKEFILE.md).
+
