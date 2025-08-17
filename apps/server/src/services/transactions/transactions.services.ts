@@ -6,6 +6,7 @@ import {TransactionType} from "./transaction.types";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schemas from "../../db/schema"
+import { notificationService } from "../notification/notification.services";
 
 
 export  class TransactionsServices {
@@ -45,9 +46,40 @@ export  class TransactionsServices {
             throw new BadRequestException("Failed to create transaction", ErrorCode.BAD_REQUEST)
         }
 
-        return transactions[0]
+        const newTransaction = transactions[0];
+
+        // Send notification based on transaction type
+        try {
+            await this.sendTransactionNotification(newTransaction);
+        } catch (error) {
+            console.error('Failed to send transaction notification:', error);
+            // Don't fail the transaction if notification fails
+        }
+
+        return newTransaction
     }
 
+    /**
+     * Send notification for transaction
+     */
+    private async sendTransactionNotification(transactionData: TransactionType) {
+        const templateName = transactionData.payment_type === 'WALLET_TRANSFER' 
+            ? 'TRANSACTION_RECEIVED' 
+            : 'TRANSACTION_SENT';
+
+        const notificationData = {
+            userId: transactionData.user_id,
+            templateName: templateName as any,
+            data: {
+                amount: transactionData.amount?.toString() || '0',
+                sender: transactionData.sender_name || 'Unknown',
+                recipient: transactionData.recipient_name || 'Unknown',
+                reference: transactionData.reference || '',
+            },
+        };
+
+        await notificationService.sendNotification(notificationData);
+    }
 
 
     public async getUserTransactions(userId: string, includes?: string[], limit?:number) {

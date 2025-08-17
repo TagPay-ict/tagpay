@@ -18,6 +18,7 @@ import randomstring from "randomstring"
 
 
 type UserType = typeof user.$inferSelect
+
 export default class AuthServices {
 
 
