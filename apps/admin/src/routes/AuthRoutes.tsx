@@ -1,6 +1,7 @@
 import React from "react";
 
 interface AuthRoutesProps {
+  className?: string;
 }
 
 const AuthRoutes: React.FC<AuthRoutesProps> = () => {

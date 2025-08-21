@@ -6,47 +6,81 @@ import { Request, Response } from "express";
 import WalletServices from "./wallet.services";
 
 export default class WalletControllers {
+  private readonly services: WalletServices;
 
+  constructor(services: WalletServices) {
+    this.services = services;
+  }
 
+  public createWalletController = asyncHandler(async (req, res) => {
+    const data = createWalletSchema.parse({ ...req.body });
+    const user = req.query.user as string;
 
-    private readonly services: WalletServices
+    await this.services.createWalletService({ ...data }, user);
 
-    constructor(services: WalletServices) {
-        this.services = services
+    res.status(HTTPSTATUS.CREATED).json({
+      success: true,
+      message: "Wallet created successfully ",
+    });
+  });
+
+  public getWalletController = asyncHandler(
+    async (req: Request, res: Response) => {
+      const userId = req.query.userId as string;
+      const user = req.user;
+
+      const walletData = await this.services.getWalletByUserId(
+        userId || user.id
+      );
+
+      res.status(HTTPSTATUS.ACCEPTED).json({
+        success: true,
+        message: "Wallet fetched successfully ",
+        data: walletData,
+      });
     }
+  );
 
+  public getUserBalanceController = asyncHandler(
+    async (req: Request, res: Response) => {
+      const userId = req.query.userId as string;
+      const user = req.user;
+      const refresh = req.query.refresh === "true";
 
-    public createWalletController = asyncHandler(async (req, res) => {
+      const targetUserId = userId || user.id;
 
-        const data = createWalletSchema.parse({ ...req.body })
-        const user = req.query.user as string;
+      if (refresh) {
+        const balanceData =
+          await this.services.refreshWalletBalance(targetUserId);
 
-        await this.services.createWalletService({ ...data }, user)
+        if (!balanceData) {
+          return res.status(HTTPSTATUS.NOT_FOUND).json({
+            success: false,
+            message: "Wallet not found",
+          });
+        }
 
-        res.status(HTTPSTATUS.CREATED).json({
-            success: true,
-            message: "Wallet created successfully "
-        })
+        return res.status(HTTPSTATUS.OK).json({
+          success: true,
+          message: "Balance refreshed successfully",
+          data: balanceData,
+        });
+      }
 
-    })
+      const balanceData = await this.services.getUserBalance(targetUserId);
 
+      if (!balanceData) {
+        return res.status(HTTPSTATUS.NOT_FOUND).json({
+          success: false,
+          message: "Wallet not found",
+        });
+      }
 
-    public getWalletController = asyncHandler(async (req: Request, res: Response) => {
-
-        const userId = req.query.userId as string
-        const user = req.user
-
-        const walletData = await this.services.getWalletByUserId(userId || user.id)
-
-
-        res.status(HTTPSTATUS.ACCEPTED).json({
-            success: true,
-            message: "Wallet fetched successfully ",
-            data: walletData
-        })
-    })
-
-
-
+      res.status(HTTPSTATUS.OK).json({
+        success: true,
+        message: "Balance fetched successfully",
+        data: balanceData,
+      });
+    }
+  );
 }
-

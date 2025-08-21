@@ -47,12 +47,12 @@ class ApiClient {
     return response.data;
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     const response: AxiosResponse<ApiResponse<T>> = await this.client.post(endpoint, data);
     return response.data;
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: unknown): Promise<ApiResponse<T>> {
     const response: AxiosResponse<ApiResponse<T>> = await this.client.put(endpoint, data);
     return response.data;
   }

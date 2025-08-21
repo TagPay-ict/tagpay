@@ -1,2 +1,2 @@
-export *  from "./root"
-export * from "./notification"
+export * from "./root";
+export * from "./notification";

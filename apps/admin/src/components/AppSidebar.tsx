@@ -1,14 +1,9 @@
 import {
-  BookOpen,
   Bot,
   Command,
-  Frame,
   LifeBuoy,
-  Map,
   PieChart,
-  Send,
   Settings2,
-  SquareTerminal,
   Users,
   CreditCard,
   Wallet,
@@ -27,9 +22,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 
 // Menu items.
