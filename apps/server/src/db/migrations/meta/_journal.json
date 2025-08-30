@@ -15,6 +15,20 @@
       "when": 1748974937385,
       "tag": "0001_dear_black_crow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1754452959529,
+      "tag": "0002_reflective_pixie",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1754453113870,
+      "tag": "0003_melted_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

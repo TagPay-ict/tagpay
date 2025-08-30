@@ -42,6 +42,7 @@ export const user = pgTable('user', {
     medium: mediumEnum(),
     date_of_birth: varchar(),
     is_flagged: boolean(),
+    migrated:boolean().default(false),
     platform: platformEnum(),
     terms: boolean().default(true),
     address: jsonb(),

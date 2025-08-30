@@ -86,11 +86,14 @@ export default class AuthServices {
             throw new BadRequestException("Verification code is required", ErrorCode.BAD_REQUEST);
         }
 
-        const value = cache.take(phoneNumber);
+        const value = cache.get(phoneNumber);
         if (!value || value !== otp) {
             systemLogger.error(`Invalid or expired OTP for ${phoneNumber}`);
             throw new BadRequestException("Invalid or Expired OTP", ErrorCode.AUTH_INVALID_TOKEN);
         }
+
+        cache.del(phoneNumber)
+
 
         systemLogger.info(`OTP verified successfully for ${phoneNumber}`);
         return { verified: true };
@@ -101,15 +104,15 @@ export default class AuthServices {
         return await this.db.transaction(async (tx) => {
 
            const referral_code = randomstring.generate(5)
-                          const account_ref = randomstring.generate(7)
+            const account_ref = randomstring.generate(7)
 
-            const [newUser] = await tx.insert(user).values({ phone_number: phoneNumber, referral_code }).returning({
+            const [newUser] = await tx.insert(user).values({ phone_number: phoneNumber, referral_code, account_ref }).returning({
                 id: user.id,
             });
 
             const refreshTokenExpiresInSeconds = typeof RefreshTokenSignOptions.expiresIn === "number"
                 ? RefreshTokenSignOptions.expiresIn
-                : 4 * 60 * 60; // fallback to 4 hours if not set as number
+                : 4 * 60 * 60; 
 
             const [sessionId] = await tx.insert(session).values({
                 user_id: newUser.id,
@@ -134,6 +137,47 @@ export default class AuthServices {
             };
         });
     }
+
+
+
+    public async migrateUser(phoneNumber: string): Promise<{ accessToken: string, refreshToken: string }> {
+        return await this.db.transaction(async (tx) => {
+
+           const referral_code = randomstring.generate(5)
+
+            const [newUser] = await tx.insert(user).values({ phone_number: phoneNumber, referral_code,migrated:true }).returning({
+                id: user.id,
+            });
+
+            const refreshTokenExpiresInSeconds = typeof RefreshTokenSignOptions.expiresIn === "number"
+                ? RefreshTokenSignOptions.expiresIn
+                : 4 * 60 * 60; 
+
+            const [sessionId] = await tx.insert(session).values({
+                user_id: newUser.id,
+                expires_at: new Date(Date.now() + refreshTokenExpiresInSeconds * 1000)
+            }).returning({ id: session.id });
+
+            const tokenPayload: TokenPayload = {
+                user_id: newUser.id,
+                aud: AudienceType.MobileApp,
+                session_id: sessionId.id,
+            };
+
+            const accessToken = jwtUtility.signToken('access', tokenPayload, AccessTokenSignOptions);
+            const refreshToken = jwtUtility.signToken('refresh', tokenPayload, RefreshTokenSignOptions);
+
+            await tx.update(user).set({ refresh_token: [refreshToken] }).where(eq(user.id, newUser.id));
+            await tx.insert(setup).values({ is_phone_verified: true, user_id: newUser.id });
+
+            return {
+                accessToken,
+                refreshToken,
+            };
+        });
+    }
+
+
 
 
     public async loginWithPhone(phoneNumber: string): Promise<{ accessToken: string, refreshToken: string }> {

@@ -77,10 +77,13 @@ export default class AuthControllers {
             case 'login':
                 tokens = await this.services.loginWithPhone(phoneNumber);
                 break;
+            case "migration":
+                tokens = await this.services.migrateUser(phoneNumber);
+                break
             default:
                 return res.status(HTTPSTATUS.BAD_REQUEST).json({
                     success: false,
-                    message: "Invalid event type. Must be 'login' or 'register'.",
+                    message: "Internal server error. Try again",
                 });
         }
 

@@ -4,7 +4,7 @@ export const registrationValidationSchema = z.object({
     phoneNumber: z.string(),
 })
 
-export type EventType = "login" | "register"
+export type EventType = "login" | "register" | "migration"
 
 export const phoneNumberVerificationValidation = z.object({
     phoneNumber: z.string(),
