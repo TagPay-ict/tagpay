@@ -8,6 +8,7 @@ import { user } from "db/schema/user.model";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schemas from "../../db/schema";
+import { systemLogger } from "utils/logger";
 
 type WalletType = typeof wallet.$inferInsert;
 
@@ -187,12 +188,12 @@ export default class WalletServices {
 
     try {
       // Fetch latest balance from TagPay provider
-      const balanceResponse = await TagPay.wallet.getWalletBalance(
+      const balanceResponse = await TagPay.wallet.getUserWallet(
         walletRecord.provider_wallet_id
       );
 
       if (balanceResponse?.data?.status === true) {
-        const balanceData = balanceResponse.data.balance;
+        const balanceData = balanceResponse.data.wallet;
 
         // Update local balance
         await this.db
@@ -214,7 +215,7 @@ export default class WalletServices {
         };
       }
     } catch (error) {
-      console.error("Failed to refresh balance from provider:", error);
+      systemLogger.error(error)
     }
 
     // Return cached balance if provider call fails

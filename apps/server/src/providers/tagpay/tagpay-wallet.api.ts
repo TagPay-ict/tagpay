@@ -50,27 +50,7 @@ class TagPayWalletApi extends TagPayBaseClass {
     }
   }
 
-  public async getWalletBalance(walletId: string): Promise<
-    AxiosResponse<{
-      status: boolean;
-      balance: {
-        balance: number;
-        availableBalance: number;
-        ledgerBalance: number;
-        holdBalance: number;
-        currency: string;
-      };
-    }>
-  > {
-    try {
-      const response = await this.axios.get(`/wallet/${walletId}/balance`);
-      return response;
-    } catch (error) {
-      console.log(error, "this is the error from getting wallet balance");
-      systemLogger.error(error);
-      throw error;
-    }
-  }
+
 }
 
 export default TagPayWalletApi;

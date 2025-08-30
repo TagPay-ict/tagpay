@@ -12,8 +12,14 @@ const axiosInstance = axios.create({
 });
 
 
-export abstract class TagPayBaseClass {
+interface GetAccountNumberData {
+    account_number: string;
+}
+
+export  class TagPayBaseClass {
     protected readonly axios = axiosInstance;
 
-    protected constructor() { }
+     constructor() { }
+
+     public async getAccountNumber(data: GetAccountNumberData) { }
 }
